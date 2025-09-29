@@ -1,8 +1,3 @@
-"""
-Infrastructure Layer - Concrete Providers
-Implementaciones concretas de proveedores cloud
-Aplicando OCP: Nuevos proveedores se añaden sin modificar código existente
-"""
 import uuid
 from datetime import datetime
 from typing import Dict, Any
@@ -11,8 +6,7 @@ import logging
 from domain.interfaces import ProveedorAbstracto
 from domain.entities import MachineVirtual, VMStatus
 
-# Configurar logging (RNF3 - Seguridad en logs)
-logging.basicConfig(level=logging.INFO)
+# Obtener logger 
 logger = logging.getLogger(__name__)
 
 
