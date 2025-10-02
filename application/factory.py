@@ -3,12 +3,14 @@ Application Layer - Factory Pattern
 Implementación del patrón Factory Method
 Aplicando OCP y DIP
 """
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Type
 import logging
 
+from pydantic import ValidationError
+from application.schemas import get_validator_for
 from domain.interfaces import ProveedorAbstracto
 from domain.entities import ProvisioningResult, VMStatus
-from infrastructure.providers import AWS, Azure, Google, OnPremise
+from infrastructure.providers import AWS, Azure, Google, OnPremise  # Esta importación sigue funcionando gracias al __init__.py
 
 logger = logging.getLogger(__name__)
 
@@ -64,12 +66,8 @@ class VMProviderFactory:
             return None
         
         try:
-            # Extraer parámetros comunes
-            field_type = config.get('type', 'default')
-            method_type = config.get('method', 'default')
-            
             # Crear instancia del proveedor
-            provider = provider_class(field_type, method_type)
+            provider = provider_class(config)
             
             logger.info(f"Proveedor creado exitosamente: {provider_type}")
             return provider
@@ -84,6 +82,69 @@ class VMProviderFactory:
         return list(cls._providers.keys())
 
 
+class ProviderOrchestrator:
+    """
+    Clase auxiliar para validar y obtener un proveedor.
+    Refinamiento de SRP: Su única responsabilidad es la validación y preparación del proveedor.
+    """
+    def __init__(self, factory: VMProviderFactory):
+        self.factory = factory
+
+    def get_validated_provider(self, provider_type: str, config: Dict[str, Any]) -> tuple[Optional[ProveedorAbstracto], Optional[ProvisioningResult]]:
+        """
+        Valida la solicitud y devuelve el proveedor o un resultado de error.
+        """
+        if not provider_type:
+            error_result = ProvisioningResult(
+                success=False,
+                message="Error: Tipo de proveedor no especificado",
+                error_detail="El parámetro 'provider' es requerido"
+            )
+            return None, error_result
+
+        # 1. Validar el `config` usando el esquema de Pydantic correspondiente
+        validator = get_validator_for(provider_type)
+        if validator:
+            try:
+                # Pydantic parsea, valida y asigna valores por defecto
+                validated_config = validator.model_validate(config)
+                # Usamos la configuración validada y enriquecida para la creación
+                config = validated_config.model_dump()
+            except ValidationError as e:
+                # Si la validación falla, Pydantic genera un error detallado
+                error_result = ProvisioningResult(
+                    success=False,
+                    message="Error de validación de parámetros",
+                    error_detail=e.json(),  # Devolvemos los detalles del error en formato JSON
+                    provider=provider_type
+                )
+                return None, error_result
+
+        provider = self.factory.create_provider(provider_type, config)
+
+        if provider is None:
+            available = self.factory.get_available_providers()
+            error_result = ProvisioningResult(
+                success=False,
+                message=f"Proveedor '{provider_type}' no soportado",
+                error_detail=f"Proveedores disponibles: {', '.join(available)}",
+                provider=provider_type
+            )
+            return None, error_result
+
+        if not provider.estado():
+            error_result = ProvisioningResult(
+                success=False,
+                message="Proveedor no disponible",
+                error_detail=f"El proveedor {provider_type} no está disponible en este momento",
+                provider=provider_type
+            )
+            return None, error_result
+
+        # Si todo es correcto, devuelve el proveedor y ningún error.
+        return provider, None
+
+
 class VMProvisioningService:
     """
     Application Service: Servicio de aprovisionamiento de VMs
@@ -95,8 +156,9 @@ class VMProvisioningService:
     """
     
     def __init__(self):
-        self.factory = VMProviderFactory()
-    
+        factory = VMProviderFactory()
+        self.orchestrator = ProviderOrchestrator(factory)
+
     def provision_vm(self, provider_type: str, config: Dict[str, Any]) -> ProvisioningResult:
         """
         Aprovisiona una VM usando el proveedor especificado
@@ -109,37 +171,18 @@ class VMProvisioningService:
             ProvisioningResult con el resultado de la operación
         """
         try:
-            # Validar proveedor
-            if not provider_type:
-                return ProvisioningResult(
-                    success=False,
-                    message="Error: Tipo de proveedor no especificado",
-                    error_detail="El parámetro 'provider' es requerido"
-                )
-            
-            # Crear proveedor usando Factory
-            provider = self.factory.create_provider(provider_type, config)
-            
-            if provider is None:
-                available = self.factory.get_available_providers()
-                return ProvisioningResult(
-                    success=False,
-                    message=f"Proveedor '{provider_type}' no soportado",
-                    error_detail=f"Proveedores disponibles: {', '.join(available)}",
-                    provider=provider_type
-                )
-            
-            # Verificar estado del proveedor
-            if not provider.estado():
-                return ProvisioningResult(
-                    success=False,
-                    message="Proveedor no disponible",
-                    error_detail=f"El proveedor {provider_type} no está disponible en este momento",
-                    provider=provider_type
-                )
-            
+            # 1. Delegar validación y obtención del proveedor
+            provider, error_result = self.orchestrator.get_validated_provider(provider_type, config)
+
+            # Si hubo un error de validación, retornarlo inmediatamente
+            if error_result:
+                return error_result
+
+            # Ayuda al analizador estático a entender que `provider` no puede ser None en este punto.
+            assert provider is not None
+
             # Aprovisionar VM (RNF4 - Logging sin información sensible)
-            logger.info(f"Iniciando aprovisionamiento en {provider_type}")
+            logger.info(f"Iniciando aprovisionamiento en {provider_type} con proveedor validado.")
             
             vm = provider.provisionar()
             
@@ -151,7 +194,8 @@ class VMProvisioningService:
                     success=True,
                     vm_id=vm.vmId,
                     message=f"VM creada exitosamente en {provider_type}",
-                    provider=provider_type
+                    provider=provider_type,
+                    vm_details=vm.to_dict()  # Añadir detalles de la VM
                 )
             else:
                 return ProvisioningResult(
@@ -172,4 +216,4 @@ class VMProvisioningService:
     
     def get_supported_providers(self) -> list:
         """Retorna lista de proveedores soportados"""
-        return self.factory.get_available_providers()
+        return self.orchestrator.factory.get_available_providers()

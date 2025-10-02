@@ -12,6 +12,7 @@ setup(
         'flask-cors>=4.0.0',
         'python-dotenv>=1.0.0',
         'requests>=2.31.0',
+        'pydantic>=2.0.0',
     ],
     python_requires='>=3.8',
     author='Universidad Popular del Cesar',

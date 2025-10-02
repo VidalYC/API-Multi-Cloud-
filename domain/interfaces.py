@@ -4,12 +4,12 @@ Abstracciones que definen contratos (DIP - Dependency Inversion Principle)
 """
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from domain.entities import MachineVirtual
+from domain.entities import MachineVirtual, Network, StorageDisk
 
 
 class ProveedorAbstracto(ABC):
     """
-    Interfaz base para todos los proveedores de cloud
+    Abstract Factory: Define la interfaz para crear familias de objetos relacionados (VM, Network, Disk).
     Aplicando DIP: Los módulos de alto nivel dependen de esta abstracción
     Aplicando OCP: Podemos extender sin modificar el código existente
     """
@@ -21,8 +21,21 @@ class ProveedorAbstracto(ABC):
     @abstractmethod
     def crear_vm(self) -> MachineVirtual:
         """
-        Método Factory que debe ser implementado por cada proveedor concreto
-        Factory Method Pattern: Define la interfaz para crear objetos
+        Crea el producto: Máquina Virtual.
+        """
+        pass
+
+    @abstractmethod
+    def crear_network(self) -> Network:
+        """
+        Crea el producto: Red.
+        """
+        pass
+
+    @abstractmethod
+    def crear_disk(self) -> StorageDisk:
+        """
+        Crea el producto: Disco.
         """
         pass
     
@@ -32,13 +45,20 @@ class ProveedorAbstracto(ABC):
     
     def provisionar(self) -> MachineVirtual:
         """
-        Template Method: Define el algoritmo general de aprovisionamiento
+        Template Method: Orquesta la creación de la familia de recursos.
+        Cumple con RNF1 (Consistencia): VM no se crea sin Red y Disco.
         """
         # Validaciones generales
         if not self._estado:
             raise Exception("Proveedor no disponible")
         
-        # Delega la creación específica al método abstracto
+        # 1. Crear recursos dependientes (Red y Disco)
+        network = self.crear_network()
+        disk = self.crear_disk()
+        
+        # 2. Crear el recurso principal (VM) y asociar los otros
         vm = self.crear_vm()
+        vm.network = network
+        vm.disks = [disk]
         
         return vm
