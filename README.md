@@ -1,113 +1,97 @@
 # API Multi-Cloud VM Provisioning
 
+Sistema de aprovisionamiento de máquinas virtuales multi-cloud implementando los patrones **Factory Method** y **Builder** con principios SOLID.
+
 ## 📋 Descripción
 
-API REST para el aprovisionamiento de máquinas virtuales en múltiples proveedores cloud (AWS, Azure, Google Cloud, On-Premise) implementando el **patrón Factory Method** y siguiendo principios **SOLID** y **Arquitectura Limpia**.
+API REST que permite aprovisionar máquinas virtuales en diferentes proveedores cloud (AWS, Azure, Google Cloud, On-Premise) utilizando dos enfoques:
+
+1. **Factory Pattern**: Para aprovisionamiento rápido con configuraciones estándar
+2. **Builder Pattern**: Para construcción detallada y personalizada de VMs paso a paso
 
 ## 🏗️ Arquitectura
 
-### Capas del Sistema
+### Patrones de Diseño Implementados
+
+- **Factory Method**: Creación de proveedores cloud de forma dinámica
+- **Abstract Factory**: Creación de familias de recursos relacionados (VM, Network, Disk)
+- **Builder**: Construcción compleja de VMs paso a paso
+- **Director**: Encapsula algoritmos de construcción predefinidos
+
+### Principios SOLID
+
+- **SRP**: Cada clase tiene una única responsabilidad
+- **OCP**: Abierto para extensión, cerrado para modificación
+- **LSP**: Las subclases pueden sustituir a sus clases base
+- **ISP**: Interfaces específicas para cada cliente
+- **DIP**: Dependencia de abstracciones, no de implementaciones
+
+### Estructura del Proyecto
 
 ```
-proyecto/
-├── domain/                 # Capa de Dominio
-│   ├── entities.py        # Entidades de negocio
-│   └── interfaces.py      # Interfaces/Abstracciones
-├── infrastructure/        # Capa de Infraestructura
-│   └── providers.py       # Implementaciones concretas
-├── application/           # Capa de Aplicación
-│   └── factory.py         # Lógica de negocio y Factory
-├── api/                   # Capa de Presentación
-│   └── main.py           # API REST con Flask
-├── tests/                # Tests unitarios
-├── requirements.txt      # Dependencias
-└── README.md            # Documentación
-```
-
-### Principios SOLID Aplicados
-
-1. **SRP (Single Responsibility Principle)**
-   - Cada clase tiene una única responsabilidad
-   - `VMProviderFactory`: Solo crea proveedores
-   - `VMProvisioningService`: Solo orquesta aprovisionamiento
-   - Cada proveedor: Solo maneja su cloud específico
-
-2. **OCP (Open/Closed Principle)**
-   - Abierto para extensión: Nuevos proveedores se añaden sin modificar código existente
-   - Cerrado para modificación: El core no cambia al agregar proveedores
-
-3. **LSP (Liskov Substitution Principle)**
-   - Todos los proveedores pueden sustituir a `ProveedorAbstracto`
-   - El cliente usa la abstracción sin conocer la implementación
-
-4. **ISP (Interface Segregation Principle)**
-   - Interfaces específicas y cohesivas
-   - Los clientes no dependen de métodos que no usan
-
-5. **DIP (Dependency Inversion Principle)**
-   - Módulos de alto nivel dependen de abstracciones
-   - `VMProvisioningService` depende de `ProveedorAbstracto`, no de clases concretas
-
-### Patrón Factory Method
-
-```
-ProveedorAbstracto (Creator)
-    ├── AWS (Concrete Creator)
-    ├── Azure (Concrete Creator)
-    ├── Google (Concrete Creator)
-    └── OnPremise (Concrete Creator)
-
-VMProviderFactory
-    └── create_provider() → Retorna ProveedorAbstracto
+API-Proveedores/
+├── api/
+│   └── main.py                    # REST API endpoints
+├── application/
+│   ├── factory.py                 # Factory & Builder services
+│   └── schemas.py                 # Pydantic validation schemas
+├── domain/
+│   ├── builder.py                 # Builder abstract interface & Director
+│   ├── entities.py                # Domain entities
+│   └── interfaces.py              # Abstract interfaces
+├── infrastructure/
+│   ├── builders/                  # Concrete builders
+│   │   ├── aws_builder.py
+│   │   ├── azure_builder.py
+│   │   ├── google_builder.py
+│   │   └── onpremise_builder.py
+│   └── providers/                 # Concrete providers
+│       ├── aws.py
+│       ├── azure.py
+│       ├── google.py
+│       └── onpremise.py
+└── tests/
+    ├── test_all.py                # Factory tests
+    ├── test_api_endpoints.py      # API integration tests
+    └── test_builder.py            # Builder tests
 ```
 
 ## 🚀 Instalación
 
-### Requisitos Previos
+### Requisitos
 
-- Python 3.8 o superior
-- pip (gestor de paquetes de Python)
+- Python 3.8+
+- pip
 
-### Pasos de Instalación
+### Pasos
 
-1. **Clonar el repositorio**
 ```bash
-git clone <tu-repositorio>
-cd vm-provisioning-api
-```
+# Clonar el repositorio
+cd API-Proveedores
 
-2. **Crear entorno virtual**
-```bash
-python -m venv venv
-```
-
-3. **Activar entorno virtual**
-
-Windows:
-```bash
-venv\Scripts\activate
-```
-
-Linux/Mac:
-```bash
-source venv/bin/activate
-```
-
-4. **Instalar dependencias**
-```bash
+# Instalar dependencias
 pip install -r requirements.txt
+
+# O usar setup.py
+pip install -e .
 ```
 
-5. **Ejecutar la aplicación**
+## 📚 Uso de la API
+
+### Iniciar el servidor
+
 ```bash
 python api/main.py
 ```
 
-La API estará disponible en: `http://localhost:5000`
+El servidor se iniciará en `http://localhost:5000`
 
-## 📡 Endpoints de la API
+---
+
+## 🔧 Endpoints Disponibles
 
 ### 1. Health Check
+
 ```http
 GET /health
 ```
@@ -121,7 +105,10 @@ GET /health
 }
 ```
 
-### 2. Listar Proveedores Disponibles
+---
+
+### 2. Listar Proveedores
+
 ```http
 GET /api/providers
 ```
@@ -135,7 +122,12 @@ GET /api/providers
 }
 ```
 
-### 3. Aprovisionar VM (Método 1)
+---
+
+### 3. Provisionar VM (Factory Pattern)
+
+Aprovisionamiento rápido con configuraciones estándar.
+
 ```http
 POST /api/vm/provision
 Content-Type: application/json
@@ -148,35 +140,40 @@ Content-Type: application/json
   "config": {
     "type": "t2.micro",
     "region": "us-east-1",
-    "vpc": "vpc-12345",
-    "ami": "ami-abc123"
+    "sizeGB": 20,
+    "volumeType": "gp2"
   }
 }
 ```
 
-**Respuesta Exitosa:**
+**Respuesta:**
 ```json
 {
   "success": true,
-  "vm_id": "aws-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "vm_id": "aws-a1b2c3d4-...",
   "message": "VM creada exitosamente en aws",
-  "error_detail": null,
-  "provider": "aws"
+  "provider": "aws",
+  "vm_details": {
+    "vmId": "aws-a1b2c3d4-...",
+    "name": "aws-t2.micro-us-east-1-a1b2",
+    "status": "running",
+    "createdAt": "2025-01-07T...",
+    "provider": "aws",
+    "network": {
+      "networkId": "vpc-12345678",
+      "name": "aws-net-us-east-1",
+      "cidr_block": "10.0.0.0/16",
+      "provider": "aws"
+    },
+    "disks": [...]
+  }
 }
 ```
 
-**Respuesta con Error:**
-```json
-{
-  "success": false,
-  "vm_id": null,
-  "message": "Proveedor 'invalid' no soportado",
-  "error_detail": "Proveedores disponibles: aws, azure, google, onpremise",
-  "provider": "invalid"
-}
-```
+---
 
-### 4. Aprovisionar VM (Método 2 - Provider en URL)
+### 4. Provisionar VM por URL (Factory Pattern)
+
 ```http
 POST /api/vm/provision/azure
 Content-Type: application/json
@@ -187,16 +184,99 @@ Content-Type: application/json
 {
   "config": {
     "type": "Standard_B1s",
-    "resource_group": "myResourceGroup",
-    "imagen": "UbuntuServer",
-    "red_virtual": "myVNet"
+    "resource_group": "production-rg",
+    "sizeGB": 50
   }
 }
 ```
 
-## 📝 Ejemplos de Uso
+---
 
-### Ejemplo 1: Aprovisionar en AWS
+### 5. Construir VM Personalizada (Builder Pattern) 🆕
+
+Construcción detallada con control total sobre todos los parámetros.
+
+```http
+POST /api/vm/build
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "provider": "aws",
+  "build_config": {
+    "name": "production-web-server",
+    "vm_type": "standard",
+    "cpu": 4,
+    "ram": 16,
+    "disk_gb": 200,
+    "disk_type": "ssd",
+    "location": "us-west-2",
+    "network_id": "vpc-custom-123",
+    "cidr": "10.5.0.0/16",
+    "advanced_options": {
+      "monitoring": true,
+      "optimized": true,
+      "security_group": "sg-web-servers"
+    }
+  }
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "vm_id": "aws-...",
+  "message": "VM construida exitosamente en aws usando Builder Pattern",
+  "provider": "aws",
+  "vm_details": {...}
+}
+```
+
+---
+
+### 6. Construir VM Predefinida (Director) 🆕
+
+Uso del Director para crear VMs con configuraciones predefinidas.
+
+```http
+POST /api/vm/build/preset
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "provider": "google",
+  "preset": "high-performance",
+  "name": "analytics-server",
+  "location": "us-central1-a"
+}
+```
+
+**Presets disponibles:**
+- `minimal`: CPU: 1, RAM: 1GB, Disk: 10GB (desarrollo/testing)
+- `standard`: CPU: 2, RAM: 4GB, Disk: 50GB (aplicaciones web)
+- `high-performance`: CPU: 8, RAM: 32GB, Disk: 500GB (bases de datos, analytics)
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "vm_id": "gcp-...",
+  "message": "VM 'high-performance' construida exitosamente en google",
+  "provider": "google",
+  "vm_details": {...}
+}
+```
+
+---
+
+## 📖 Ejemplos de Uso
+
+### Ejemplo 1: Provisionar VM Rápida en AWS (Factory)
 
 ```bash
 curl -X POST http://localhost:5000/api/vm/provision \
@@ -204,229 +284,227 @@ curl -X POST http://localhost:5000/api/vm/provision \
   -d '{
     "provider": "aws",
     "config": {
-      "type": "t2.micro",
+      "type": "t2.small",
       "region": "us-east-1"
     }
   }'
 ```
 
-### Ejemplo 2: Aprovisionar en Azure
+### Ejemplo 2: Construir VM Personalizada en Azure (Builder)
 
 ```bash
-curl -X POST http://localhost:5000/api/vm/provision/azure \
+curl -X POST http://localhost:5000/api/vm/build \
   -H "Content-Type: application/json" \
   -d '{
-    "config": {
-      "type": "Standard_B1s",
-      "resource_group": "prod-rg"
+    "provider": "azure",
+    "build_config": {
+      "name": "database-server",
+      "vm_type": "high-performance",
+      "cpu": 8,
+      "ram": 32,
+      "disk_gb": 1000,
+      "disk_type": "ssd",
+      "location": "eastus",
+      "advanced_options": {
+        "monitoring": true,
+        "resource_group": "production"
+      }
     }
   }'
 ```
 
-### Ejemplo 3: Aprovisionar en Google Cloud
+### Ejemplo 3: Crear VM Mínima para Testing (Director)
 
 ```bash
-curl -X POST http://localhost:5000/api/vm/provision \
-  -H "Content-Type: application/json" \
-  -d '{
-    "provider": "google",
-    "config": {
-      "type": "n1-standard-1",
-      "zone": "us-central1-a",
-      "project": "my-project-123"
-    }
-  }'
-```
-
-### Ejemplo 4: Aprovisionar On-Premise
-
-```bash
-curl -X POST http://localhost:5000/api/vm/provision \
+curl -X POST http://localhost:5000/api/vm/build/preset \
   -H "Content-Type: application/json" \
   -d '{
     "provider": "onpremise",
-    "config": {
-      "type": "vmware",
-      "cpu": 4,
-      "ram": 8,
-      "disk": 100
-    }
+    "preset": "minimal",
+    "name": "test-vm",
+    "location": "datacenter-1"
   }'
 ```
 
-## 🔧 Extender con Nuevos Proveedores
+---
 
-Para agregar un nuevo proveedor (ej: Oracle Cloud), sigue estos pasos:
+## 🎯 Diferencias entre Factory y Builder
 
-### 1. Crear Clase del Proveedor
+### Factory Pattern (`/api/vm/provision`)
+- ✅ Aprovisionamiento rápido
+- ✅ Configuraciones estándar del proveedor
+- ✅ Validación con Pydantic
+- ✅ Valores por defecto automáticos
+- ❌ Menos control sobre detalles
 
-En `infrastructure/providers.py`:
+**Usar cuando:** Necesitas crear VMs rápidamente con configuraciones típicas del proveedor.
 
-```python
-class OracleCloud(ProveedorAbstracto):
-    """Implementación para Oracle Cloud"""
-    
-    def __init__(self, field_type: str, method_type: str):
-        super().__init__()
-        self.field = field_type
-        self.method = method_type
-    
-    def crear_vm(self) -> MachineVirtual:
-        """Factory Method para Oracle Cloud"""
-        vm_id = f"oracle-{uuid.uuid4()}"
-        
-        logger.info(f"Creando VM en Oracle Cloud - ID: {vm_id}")
-        
-        vm = MachineVirtual(
-            vmId=vm_id,
-            name=f"oracle-instance-{vm_id[:8]}",
-            status=VMStatus.RUNNING,
-            createdAt=datetime.now(),
-            provider="oracle"
-        )
-        
-        return vm
-```
+### Builder Pattern (`/api/vm/build`)
+- ✅ Control total sobre la configuración
+- ✅ Construcción paso a paso
+- ✅ Configuraciones complejas y personalizadas
+- ✅ Opciones avanzadas específicas
+- ✅ Director con presets predefinidos
 
-### 2. Registrar el Proveedor
-
-En `application/factory.py`, agregar al diccionario:
-
-```python
-_providers = {
-    'aws': AWS,
-    'azure': Azure,
-    'google': Google,
-    'onpremise': OnPremise,
-    'oracle': OracleCloud,  # Nuevo proveedor
-}
-```
-
-**¡Listo! No se necesita modificar ningún otro código.**
-
-## 🧪 Testing
-
-### Estructura de Tests
-
-```python
-# tests/test_factory.py
-import unittest
-from application.factory import VMProviderFactory, VMProvisioningService
-
-class TestVMProviderFactory(unittest.TestCase):
-    
-    def test_create_aws_provider(self):
-        """Test creación de proveedor AWS"""
-        provider = VMProviderFactory.create_provider('aws', {'type': 't2.micro'})
-        self.assertIsNotNone(provider)
-        self.assertEqual(provider.__class__.__name__, 'AWS')
-    
-    def test_invalid_provider(self):
-        """Test proveedor inválido"""
-        provider = VMProviderFactory.create_provider('invalid', {})
-        self.assertIsNone(provider)
-    
-    def test_provision_success(self):
-        """Test aprovisionamiento exitoso"""
-        service = VMProvisioningService()
-        result = service.provision_vm('aws', {'type': 't2.micro'})
-        self.assertTrue(result.success)
-        self.assertIsNotNone(result.vm_id)
-
-if __name__ == '__main__':
-    unittest.main()
-```
-
-### Ejecutar Tests
-
-```bash
-python -m pytest tests/
-```
-
-## 📊 Requerimientos Cumplidos
-
-### Requerimientos Funcionales (RF)
-
-✅ **RF1**: API con endpoint único para múltiples proveedores  
-✅ **RF2**: Lógica específica por proveedor usando Factory Method  
-✅ **RF3**: Respuesta con estado de aprovisionamiento (éxito/error)  
-✅ **RF4**: Logging de solicitudes sin información sensible  
-✅ **RF5**: Extensibilidad sin modificar código central (OCP)  
-
-### Requerimientos No Funcionales (RNF)
-
-✅ **RNF1 - Extensibilidad**: Nuevos proveedores se agregan fácilmente  
-✅ **RNF2 - Mantenibilidad**: SOLID aplicado, especialmente DIP  
-✅ **RNF3 - Seguridad**: Logs sin credenciales o tokens  
-✅ **RNF4 - Escalabilidad**: API stateless, lista para escalar  
-✅ **RNF5 - Compatibilidad**: Acepta JSON para todos los proveedores  
-
-## 🎯 Principios de Diseño Aplicados
-
-### Arquitectura Limpia
-
-**Independencia de frameworks**: La lógica de negocio no depende de Flask  
-**Testeable**: Lógica de negocio separada de infraestructura  
-**Independencia de UI**: La API puede cambiar sin afectar el dominio  
-**Independencia de BD**: No hay acoplamiento a bases de datos específicas  
-
-### Separación de Responsabilidades
-
-- **Domain Layer**: Entidades e interfaces del negocio
-- **Application Layer**: Casos de uso y lógica de aplicación
-- **Infrastructure Layer**: Implementaciones técnicas específicas
-- **API Layer**: Capa de presentación REST
-
-## 📚 Recursos Adicionales
-
-### Documentación de Patrones
-
-- [Factory Method Pattern - Refactoring Guru](https://refactoring.guru/design-patterns/factory-method)
-- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
-- [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-
-### Herramientas UML Utilizadas
-
-- StarUML
-- Draw.io
-- PlantUML
-
-## 👥 Autor
-
-**Universidad Popular del Cesar**  
-Especialización en Ingeniería de Software  
-Asignatura: Patrones de Diseño de Software
-
-## 📄 Licencia
-
-Este proyecto es parte de un ejercicio académico.
+**Usar cuando:** Necesitas VMs altamente personalizadas o construcción incremental.
 
 ---
 
-## 🎓 Notas para Sustentación
+## 🔬 Testing
 
-### Puntos Clave a Destacar
+### Ejecutar todos los tests
 
-1. **Factory Method Pattern**
-   - Encapsula la creación de objetos
-   - Permite extensión sin modificación
-   - Desacopla cliente de implementaciones concretas
+```bash
+# Tests del Factory Pattern
+python tests/test_all.py
 
-2. **SOLID Compliance**
-   - Cada principio aplicado con ejemplos concretos
-   - DIP especialmente importante para flexibilidad
+# Tests de endpoints API
+python tests/test_api_endpoints.py
 
-3. **Arquitectura Limpia**
-   - Separación clara de capas
-   - Dependencias apuntan hacia el dominio
-   - Fácil de testear y mantener
+# Tests del Builder Pattern
+python tests/test_builder.py
+```
 
-4. **Extensibilidad**
-   - Demostrar cómo agregar Oracle Cloud en vivo
-   - Sin modificar código existente
-   - Solo agregar nueva clase y registrarla
+### Cobertura de Tests
 
-5. **Escalabilidad**
-   - API stateless
-   - Sin sesiones ni estado compartido
-   - Lista para balanceo de carga
+- ✅ 80+ tests unitarios e integración
+- ✅ Tests de endpoints API
+- ✅ Validación de principios SOLID
+- ✅ Tests de patrones de diseño (Factory + Builder)
+
+---
+
+## 🔐 Validación de Configuraciones
+
+El sistema usa **Pydantic** para validar automáticamente las configuraciones:
+
+### AWS Config
+```python
+{
+  "type": "t2.micro",       # default: t2.micro
+  "region": "us-east-1",    # default: us-east-1
+  "sizeGB": 20,             # default: 20 (must be > 0)
+  "volumeType": "gp2",      # default: gp2
+  "vpcId": "vpc-xxx"        # optional
+}
+```
+
+### Azure Config
+```python
+{
+  "type": "Standard_B1s",   # default: Standard_B1s
+  "resource_group": "rg",   # default: default-rg
+  "sizeGB": 30,             # default: 30 (must be > 0)
+  "diskSku": "Standard_LRS",# default: Standard_LRS
+  "virtualNetwork": "vnet"  # optional
+}
+```
+
+### Google Config
+```python
+{
+  "type": "n1-standard-1",  # default: n1-standard-1
+  "zone": "us-central1-a",  # default: us-central1-a
+  "sizeGB": 10,             # default: 10 (must be > 0)
+  "diskType": "pd-standard",# default: pd-standard
+  "networkName": "net"      # optional
+}
+```
+
+### OnPremise Config
+```python
+{
+  "cpu": 2,                 # default: 2 (must be > 0)
+  "ram": 4,                 # default: 4 (must be > 0)
+  "disk": 50,               # default: 50 (must be > 0)
+  "vlanId": 100,            # optional
+  "storagePool": "pool",    # optional
+  "raidLevel": 5            # optional
+}
+```
+
+---
+
+## 📊 Respuestas de Error
+
+### Error de validación
+```json
+{
+  "success": false,
+  "message": "Error de validación de parámetros",
+  "error_detail": "[{\"loc\": [\"sizeGB\"], \"msg\": \"ensure this value is greater than 0\"}]",
+  "provider": "aws"
+}
+```
+
+### Proveedor no soportado
+```json
+{
+  "success": false,
+  "message": "Proveedor 'invalid' no soportado",
+  "error_detail": "Proveedores disponibles: aws, azure, google, onpremise",
+  "provider": "invalid"
+}
+```
+
+---
+
+## 🛠️ Extensibilidad
+
+### Agregar un nuevo proveedor
+
+1. **Crear el proveedor concreto:**
+```python
+# infrastructure/providers/digitalocean.py
+from domain.interfaces import ProveedorAbstracto
+
+class DigitalOcean(ProveedorAbstracto):
+    def crear_vm(self) -> MachineVirtual:
+        # Implementación
+        pass
+```
+
+2. **Crear el builder:**
+```python
+# infrastructure/builders/digitalocean_builder.py
+from domain.builder import VMBuilder
+
+class DigitalOceanVMBuilder(VMBuilder):
+    # Implementación
+    pass
+```
+
+3. **Registrar en los factories:**
+```python
+VMProviderFactory.register_provider('digitalocean', DigitalOcean)
+```
+
+---
+
+## 📝 Notas Técnicas
+
+### Requisitos Funcionales (RF)
+- **RF1**: Aprovisionar VMs en múltiples clouds
+- **RF2**: Invocar lógica según proveedor
+- **RF3**: Devolver estado del aprovisionamiento
+- **RF4**: Registrar logs sin información sensible
+- **RF5**: Listar proveedores disponibles
+
+### Requisitos No Funcionales (RNF)
+- **RNF1**: Consistencia - VM no se crea sin Red y Disco
+- **RNF3**: Logging seguro sin credenciales
+- **RNF4**: API Stateless para escalabilidad
+- **RNF5**: Comunicación vía JSON
+
+---
+
+## 👥 Autores
+
+- Universidad Popular del Cesar
+- Curso: Patrones de Diseño
+
+---
+
+## 📄 Licencia
+
+Este proyecto es de uso académico.

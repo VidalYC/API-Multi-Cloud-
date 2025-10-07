@@ -14,7 +14,7 @@ from flask_cors import CORS
 import logging
 from typing import Dict, Any
 
-from application.factory import VMProvisioningService
+from application.factory import VMProvisioningService, VMBuildingService
 
 # Configuración de logging
 logging.basicConfig(
@@ -27,8 +27,9 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS
 
-# Service (DIP: Inyección de dependencia)
+# Services (DIP: Inyección de dependencia)
 provisioning_service = VMProvisioningService()
+building_service = VMBuildingService()
 
 
 @app.route('/health', methods=['GET'])
@@ -181,6 +182,153 @@ def provision_vm_by_provider(provider: str):
         }), 500
 
 
+@app.route('/api/vm/build', methods=['POST'])
+def build_vm():
+    """
+    Endpoint para construir VMs usando Builder Pattern con configuración detallada
+
+    Request Body (JSON):
+    {
+        "provider": "aws|azure|google|onpremise",
+        "build_config": {
+            "name": "my-vm",
+            "vm_type": "standard",
+            "cpu": 4,
+            "ram": 16,
+            "disk_gb": 100,
+            "disk_type": "ssd",
+            "location": "us-east-1",
+            "network_id": "vpc-123",
+            "cidr": "10.0.0.0/16",
+            "advanced_options": {
+                "monitoring": true,
+                "optimized": true
+            }
+        }
+    }
+
+    Returns:
+        JSON con resultado de la construcción
+    """
+    try:
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Content-Type debe ser application/json'
+            }), 400
+
+        data: Dict[str, Any] = request.get_json()
+
+        # Validar parámetros requeridos
+        if 'provider' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Parámetro "provider" es requerido',
+                'example': {
+                    'provider': 'aws',
+                    'build_config': {
+                        'name': 'my-vm',
+                        'vm_type': 'standard',
+                        'cpu': 4,
+                        'ram': 16,
+                        'disk_gb': 100,
+                        'location': 'us-east-1'
+                    }
+                }
+            }), 400
+
+        if 'build_config' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Parámetro "build_config" es requerido'
+            }), 400
+
+        provider = str(data.get('provider', ''))
+        build_config = data.get('build_config', {})
+
+        logger.info(f"Solicitud de construcción (Builder) - Proveedor: {provider}")
+
+        # Llamar al servicio de construcción
+        result = building_service.build_vm_with_config(provider, build_config)
+
+        response = result.to_dict()
+        status_code = 200 if result.success else 400
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logger.error(f"Error en endpoint de construcción: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
+@app.route('/api/vm/build/preset', methods=['POST'])
+def build_vm_preset():
+    """
+    Endpoint para construir VMs usando configuraciones predefinidas (Director)
+
+    Request Body (JSON):
+    {
+        "provider": "aws|azure|google|onpremise",
+        "preset": "minimal|standard|high-performance",
+        "name": "my-vm",
+        "location": "us-east-1"
+    }
+
+    Returns:
+        JSON con resultado de la construcción
+    """
+    try:
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Content-Type debe ser application/json'
+            }), 400
+
+        data: Dict[str, Any] = request.get_json()
+
+        # Validar parámetros requeridos
+        required_params = ['provider', 'preset', 'name']
+        for param in required_params:
+            if param not in data:
+                return jsonify({
+                    'success': False,
+                    'error': f'Parámetro "{param}" es requerido',
+                    'example': {
+                        'provider': 'aws',
+                        'preset': 'standard',
+                        'name': 'my-vm',
+                        'location': 'us-east-1'
+                    }
+                }), 400
+
+        provider = str(data.get('provider', ''))
+        preset = str(data.get('preset', ''))
+        name = str(data.get('name', ''))
+        location = str(data.get('location', 'us-east-1'))
+
+        logger.info(f"Solicitud de construcción predefinida - Proveedor: {provider}, Preset: {preset}")
+
+        # Llamar al servicio de construcción predefinida
+        result = building_service.build_predefined_vm(provider, preset, name, location)
+
+        response = result.to_dict()
+        status_code = 200 if result.success else 400
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logger.error(f"Error en endpoint de preset: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
 @app.errorhandler(404)
 def not_found(error):
     """Manejador de rutas no encontradas"""
@@ -191,7 +339,9 @@ def not_found(error):
             'GET /health',
             'GET /api/providers',
             'POST /api/vm/provision',
-            'POST /api/vm/provision/<provider>'
+            'POST /api/vm/provision/<provider>',
+            'POST /api/vm/build',
+            'POST /api/vm/build/preset'
         ]
     }), 404
 
