@@ -444,3 +444,86 @@ class VMBuildingService:
                 error_detail=str(e),
                 provider=provider_type
             )
+        
+    def build_vm_type(self, provider_type: str, vm_type: str,
+                      name: str, location: str, size: str = 'medium') -> ProvisioningResult:
+        """
+        Construye una VM de uno de los 3 tipos especificados en el PDF usando Director
+        
+        Args:
+            provider_type: Tipo de proveedor (aws, azure, google, onpremise)
+            vm_type: Tipo de VM según PDF
+                     - 'standard': Standard VM (General Purpose)
+                     - 'memory-optimized': VM Optimizada en Memoria
+                     - 'disk-optimized': VM Optimizada en Disco
+            name: Nombre de la VM
+            location: Región/ubicación
+            size: Tamaño de la VM (small, medium, large)
+        
+        Returns:
+            ProvisioningResult con el resultado de la operación
+        """
+        try:
+            # Crear builder
+            builder = self.builder_factory.create_builder(provider_type)
+
+            if builder is None:
+                available = self.builder_factory.get_available_builders()
+                return ProvisioningResult(
+                    success=False,
+                    message=f"Builder para '{provider_type}' no soportado",
+                    error_detail=f"Builders disponibles: {', '.join(available)}",
+                    provider=provider_type
+                )
+
+            # Crear director
+            from domain.builder import VMDirector
+            director = VMDirector(builder)
+
+            # Construir según el tipo de VM del PDF
+            if vm_type == 'standard':
+                vm = director.build_standard_vm(name, location, size)
+                type_description = "Standard VM (General Purpose)"
+            elif vm_type == 'memory-optimized':
+                vm = director.build_memory_optimized_vm(name, location, size)
+                type_description = "VM Optimizada en Memoria (Memory-Optimized)"
+            elif vm_type == 'disk-optimized':
+                vm = director.build_disk_optimized_vm(name, location, size)
+                type_description = "VM Optimizada en Disco (Compute-Optimized)"
+            else:
+                return ProvisioningResult(
+                    success=False,
+                    message=f"Tipo de VM '{vm_type}' no soportado",
+                    error_detail="Tipos disponibles: standard, memory-optimized, disk-optimized",
+                    provider=provider_type
+                )
+
+            logger.info(f"VM tipo '{vm_type}' construida exitosamente - ID: {vm.vmId}")
+            logger.info(f"Especificaciones: {vm.instance_type} - {vm.vcpus} vCPUs, {vm.memoryGB}GB RAM")
+            logger.info(f"Optimizaciones: Memory={vm.memoryOptimization}, Disk={vm.diskOptimization}")
+
+            return ProvisioningResult(
+                success=True,
+                vm_id=vm.vmId,
+                message=f"{type_description} construida exitosamente en {provider_type}",
+                provider=provider_type,
+                vm_details=vm.to_dict()
+            )
+
+        except ValueError as ve:
+            # Captura errores de validación de región
+            logger.error(f"Error de validación: {str(ve)}")
+            return ProvisioningResult(
+                success=False,
+                message="Error de validación",
+                error_detail=str(ve),
+                provider=provider_type
+            )
+        except Exception as e:
+            logger.error(f"Error en construcción de VM tipo '{vm_type}': {str(e)}", exc_info=True)
+            return ProvisioningResult(
+                success=False,
+                message="Error interno en la construcción",
+                error_detail=str(e),
+                provider=provider_type
+            )

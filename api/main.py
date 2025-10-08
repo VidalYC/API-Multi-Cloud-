@@ -40,7 +40,7 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'service': 'VM Provisioning API',
-        'version': '1.0.0'
+        'version': '2.0.0'
     }), 200
 
 
@@ -63,6 +63,71 @@ def get_providers():
         
     except Exception as e:
         logger.error(f"Error obteniendo proveedores: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor'
+        }), 500
+
+
+@app.route('/api/vm/types', methods=['GET'])
+def get_vm_types():
+    """
+    Endpoint para listar los 3 tipos de VM disponibles según el PDF
+    
+    Returns:
+        JSON con los tipos de VM y sus características
+    """
+    try:
+        vm_types = {
+            'standard': {
+                'name': 'Standard VM',
+                'description': 'Máquina virtual de propósito general (General Purpose)',
+                'characteristics': {
+                    'memoryOptimization': False,
+                    'diskOptimization': False,
+                    'use_cases': ['Aplicaciones web', 'Servidores de aplicación', 'Desarrollo y testing']
+                },
+                'aws_types': ['t3.medium', 'm5.large', 'm5.xlarge'],
+                'azure_types': ['D2s_v3', 'D4s_v3', 'D8s_v3'],
+                'gcp_types': ['e2-standard-2', 'e2-standard-4', 'e2-standard-8'],
+                'onpremise_types': ['onprem-std1', 'onprem-std2', 'onprem-std3']
+            },
+            'memory-optimized': {
+                'name': 'VM Optimizada en Memoria',
+                'description': 'Máquina virtual optimizada para cargas con alta demanda de memoria',
+                'characteristics': {
+                    'memoryOptimization': True,
+                    'diskOptimization': False,
+                    'use_cases': ['Bases de datos en memoria', 'Caché distribuido', 'Análisis big data']
+                },
+                'aws_types': ['r5.large', 'r5.xlarge', 'r5.2xlarge'],
+                'azure_types': ['E2s_v3', 'E4s_v3', 'E8s_v3'],
+                'gcp_types': ['n2-highmem-2', 'n2-highmem-4', 'n2-highmem-8'],
+                'onpremise_types': ['onprem-mem1', 'onprem-mem2', 'onprem-mem3']
+            },
+            'disk-optimized': {
+                'name': 'VM Optimizada en Disco',
+                'description': 'Máquina virtual optimizada para operaciones intensivas de CPU y disco',
+                'characteristics': {
+                    'memoryOptimization': False,
+                    'diskOptimization': True,
+                    'use_cases': ['Procesamiento batch', 'Codificación de video', 'Machine learning training']
+                },
+                'aws_types': ['c5.large', 'c5.xlarge', 'c5.2xlarge'],
+                'azure_types': ['F2s_v2', 'F4s_v2', 'F8s_v2'],
+                'gcp_types': ['n2-highcpu-2', 'n2-highcpu-4', 'n2-highcpu-8'],
+                'onpremise_types': ['onprem-cpu1', 'onprem-cpu2', 'onprem-cpu3']
+            }
+        }
+
+        return jsonify({
+            'success': True,
+            'vm_types': vm_types,
+            'count': len(vm_types)
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error obteniendo tipos de VM: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Error interno del servidor'
@@ -329,6 +394,173 @@ def build_vm_preset():
         }), 500
 
 
+@app.route('/api/vm/build/standard', methods=['POST'])
+def build_standard_vm():
+    """
+    Endpoint para construir Standard VM según PDF (Tipo 1)
+    
+    Request Body (JSON):
+    {
+        "provider": "aws|azure|google|onpremise",
+        "name": "my-standard-vm",
+        "location": "us-east-1",
+        "size": "small|medium|large"  (opcional, default: medium)
+    }
+    """
+    try:
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Content-Type debe ser application/json'
+            }), 400
+
+        data: Dict[str, Any] = request.get_json()
+
+        # Validar parámetros requeridos
+        required_params = ['provider', 'name', 'location']
+        for param in required_params:
+            if param not in data:
+                return jsonify({
+                    'success': False,
+                    'error': f'Parámetro "{param}" es requerido',
+                    'example': {
+                        'provider': 'aws',
+                        'name': 'web-server-prod',
+                        'location': 'us-east-1',
+                        'size': 'medium'
+                    }
+                }), 400
+
+        provider = str(data.get('provider', ''))
+        name = str(data.get('name', ''))
+        location = str(data.get('location', ''))
+        size = str(data.get('size', 'medium'))
+
+        logger.info(f"Solicitud Standard VM - Proveedor: {provider}, Nombre: {name}")
+
+        # Construir Standard VM usando Director
+        result = building_service.build_vm_type(provider, 'standard', name, location, size)
+
+        response = result.to_dict()
+        status_code = 200 if result.success else 400
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logger.error(f"Error en endpoint Standard VM: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
+@app.route('/api/vm/build/memory-optimized', methods=['POST'])
+def build_memory_optimized_vm():
+    """
+    Endpoint para construir VM Optimizada en Memoria según PDF (Tipo 2)
+    
+    Request Body (JSON):
+    {
+        "provider": "aws|azure|google|onpremise",
+        "name": "database-server",
+        "location": "us-east-1",
+        "size": "small|medium|large"  (opcional, default: medium)
+    }
+    """
+    try:
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Content-Type debe ser application/json'
+            }), 400
+
+        data: Dict[str, Any] = request.get_json()
+
+        required_params = ['provider', 'name', 'location']
+        for param in required_params:
+            if param not in data:
+                return jsonify({
+                    'success': False,
+                    'error': f'Parámetro "{param}" es requerido'
+                }), 400
+
+        provider = str(data.get('provider', ''))
+        name = str(data.get('name', ''))
+        location = str(data.get('location', ''))
+        size = str(data.get('size', 'medium'))
+
+        logger.info(f"Solicitud Memory-Optimized VM - Proveedor: {provider}")
+
+        result = building_service.build_vm_type(provider, 'memory-optimized', name, location, size)
+
+        response = result.to_dict()
+        status_code = 200 if result.success else 400
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logger.error(f"Error en endpoint Memory-Optimized VM: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
+@app.route('/api/vm/build/disk-optimized', methods=['POST'])
+def build_disk_optimized_vm():
+    """
+    Endpoint para construir VM Optimizada en Disco según PDF (Tipo 3)
+    
+    Request Body (JSON):
+    {
+        "provider": "aws|azure|google|onpremise",
+        "name": "compute-server",
+        "location": "us-east-1",
+        "size": "small|medium|large"  (opcional, default: medium)
+    }
+    """
+    try:
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Content-Type debe ser application/json'
+            }), 400
+
+        data: Dict[str, Any] = request.get_json()
+
+        required_params = ['provider', 'name', 'location']
+        for param in required_params:
+            if param not in data:
+                return jsonify({
+                    'success': False,
+                    'error': f'Parámetro "{param}" es requerido'
+                }), 400
+
+        provider = str(data.get('provider', ''))
+        name = str(data.get('name', ''))
+        location = str(data.get('location', ''))
+        size = str(data.get('size', 'medium'))
+
+        logger.info(f"Solicitud Disk-Optimized VM - Proveedor: {provider}")
+
+        result = building_service.build_vm_type(provider, 'disk-optimized', name, location, size)
+
+        response = result.to_dict()
+        status_code = 200 if result.success else 400
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logger.error(f"Error en endpoint Disk-Optimized VM: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
 @app.errorhandler(404)
 def not_found(error):
     """Manejador de rutas no encontradas"""
@@ -338,10 +570,14 @@ def not_found(error):
         'available_endpoints': [
             'GET /health',
             'GET /api/providers',
+            'GET /api/vm/types',
             'POST /api/vm/provision',
             'POST /api/vm/provision/<provider>',
             'POST /api/vm/build',
-            'POST /api/vm/build/preset'
+            'POST /api/vm/build/preset',
+            'POST /api/vm/build/standard',
+            'POST /api/vm/build/memory-optimized',
+            'POST /api/vm/build/disk-optimized'
         ]
     }), 404
 
