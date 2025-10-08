@@ -2552,7 +2552,7 @@ Este proyecto es excelente material de enseñanza porque:
 **Documento creado por:** Sistema de Aprovisionamiento Multi-Cloud
 **Fecha:** 2025
 **Versión:** 1.0
-**Universidad Popular del Cesar** - Especialización en Ingeniería de Software
+**Universidad Popular del Cesar** - Ingeniería de Software
 
 ---
 
