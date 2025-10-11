@@ -1,95 +1,512 @@
-/* Crear en: frontend/src/components/LandingPage.css */
 .landing-container {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    text-align: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
+    background: linear-gradient(135deg, #0a3d62 0%, #07aee0 50%, #0a3d62 100%);
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+/* Formas animadas de fondo */
+.background-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: -5%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-2 {
+    width: 400px;
+    height: 400px;
+    top: 50%;
+    right: -10%;
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+.shape-3 {
+    width: 200px;
+    height: 200px;
+    bottom: 10%;
+    left: 20%;
+    animation: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px);
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px);
+    }
+}
+
+/* Contenido principal */
+.landing-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    padding: 4rem 0;
+    min-height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 
-.landing-header {
+.hero-icon {
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: #ffffff !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3);
+    -webkit-text-fill-color: #ffffff !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+}
+
+.hero-section .subtitle {
+    font-size: 1.3rem;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-section .subtitle strong {
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.badge {
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Providers Section */
+.providers-section {
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.providers-section h2,
+.features-section h2,
+.patterns-section h2,
+.solid-section h2,
+.cta-content h2 {
+    font-size: 2.5rem;
     margin-bottom: 3rem;
+    color: #ffffff !important;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+    -webkit-text-fill-color: #ffffff !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
 }
 
-.landing-header h1 {
-    font-size: 2.8rem;
-    color: #1a253c;
-    margin-bottom: 0.5rem;
+.cta-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
 }
 
-.landing-header .subtitle {
-    font-size: 1.2rem;
-    color: #555;
-    max-width: 600px;
+.providers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.feature-section, .patterns-section, .cta-section {
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 12px;
+.provider-card {
+    background: rgba(255, 255, 255, 0.95);
     padding: 2rem;
-    margin: 2rem auto;
-    max-width: 900px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #333;
 }
 
-.feature-section h2, .patterns-section h2, .cta-section h2 {
-    font-size: 2rem;
+.provider-card:hover {
+    box-shadow: 0 15px 60px rgba(0, 0, 0, 0.3);
+}
+
+.provider-card h3 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.5rem;
     color: #2c3e50;
+}
+
+.provider-card p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+}
+
+/* Features Section */
+.features-section {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.features-grid {
+    display: grid;
+    text-align: left;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
     margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+/* Patterns Section */
+.patterns-section {
+    text-align: center;
+    padding: 4rem 0;
 }
 
 .patterns-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
     text-align: left;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
 }
 
 .pattern-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+    color: #333;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-.pattern-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+.pattern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: white;
+}
+
+.pattern-number {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #79c6dd, #00d4ff);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
 }
 
 .pattern-card h3 {
-    font-size: 1.5rem;
-    color: #3498db;
-    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.pattern-card p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.pattern-card ul li {
+    padding: 0.5rem 0;
+    color: #667eea;
+    font-weight: 500;
+}
+
+/* SOLID Section */
+.solid-section {
+    text-align: center;
+    padding: 4rem 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    margin: 2rem 0;
+}
+
+.solid-grid {
+    display: grid;
+    text-align: left;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.solid-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.solid-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(10px);
+}
+
+.solid-letter {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #00d4ff, #1e88a8);
+    color: white;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    flex-shrink: 0;
+    box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+}
+
+.solid-item strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    color: white;
+}
+
+.solid-item p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 6rem 0;
+    text-align: center;
+}
+
+.cta-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 4rem 2rem;
+    border-radius: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .cta-button {
-    background-color: #3498db;
+    padding: 1.5rem 3rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: #002f3d;
     color: white;
     border: none;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: bold;
     border-radius: 50px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 10px 40px rgba(0, 212, 255, 0.4);
+    transition: all 0.3s ease;
 }
 
 .cta-button:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 60px rgba(0, 212, 255, 0.5);
+    background: #002f3d;
 }
 
+/* Footer */
 .landing-footer {
-    margin-top: 3rem;
-    color: #777;
+    padding: 3rem 0;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 4rem;
+}
+
+.landing-footer p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tech-stack {
     font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hero-section h1 {
+        font-size: 2.8rem;
+    }
+    
+    .providers-grid,
+    .features-grid,
+    .patterns-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .landing-content {
+        padding: 1rem;
+    }
+    
+    .hero-section {
+        padding: 2rem 0;
+        min-height: 60vh;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-section .subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .hero-badges {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .providers-grid,
+    .features-grid,
+    .patterns-grid,
+    .solid-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .solid-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Ocultar la barra de desplazamiento en toda la página (incluyendo modales) pero mantener la funcionalidad */
+* {
+    /* Para Firefox */
+    scrollbar-width: none;
+    /* Para Internet Explorer y Edge */
+    -ms-overflow-style: none;
+}
+
+/* Para navegadores Webkit (Chrome, Safari, Opera, Brave) */
+*::-webkit-scrollbar {
+    display: none;
 }
