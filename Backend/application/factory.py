@@ -33,9 +33,8 @@ class VMProviderFactory:
         'aws': AWS,
         'azure': Azure,
         'google': Google,
-        'gcp': Google,  # Alias
-        'onpremise': OnPremise,
-        'on-premise': OnPremise  # Alias
+        'gcp': Google, 
+        'onpremise': OnPremise  
     }
     
     @classmethod
