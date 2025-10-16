@@ -122,6 +122,7 @@ class TestPrototypePattern(unittest.TestCase):
 
         # Verificaciones
         self.assertIsNotNone(cloned_vm.network, "Red debe clonarse")
+        assert cloned_vm.network is not None  # Para type checker
         self.assertNotEqual(cloned_vm.network.networkId, network.networkId, "ID de red debe ser diferente")
         self.assertEqual(cloned_vm.network.cidr_block, network.cidr_block, "CIDR debe ser igual")
         self.assertEqual(cloned_vm.network.region, network.region, "Región debe ser igual")
@@ -156,6 +157,7 @@ class TestPrototypePattern(unittest.TestCase):
 
         # Verificaciones
         self.assertIsNotNone(cloned_vm.disks, "Discos deben clonarse")
+        assert cloned_vm.disks is not None  # Para type checker
         self.assertEqual(len(cloned_vm.disks), 1, "Debe haber 1 disco")
         self.assertNotEqual(cloned_vm.disks[0].diskId, disk.diskId, "ID de disco debe ser diferente")
         self.assertEqual(cloned_vm.disks[0].size_gb, disk.size_gb, "Tamaño debe ser igual")
@@ -198,6 +200,8 @@ class TestPrototypePattern(unittest.TestCase):
         cloned_vm = original_vm.clone(new_name="server-west", region="us-west-2")
 
         # Verificaciones
+        assert cloned_vm.network is not None  # Para type checker
+        assert cloned_vm.disks is not None  # Para type checker
         self.assertEqual(cloned_vm.network.region, "us-west-2", "Región de red debe cambiar")
         self.assertEqual(cloned_vm.disks[0].region, "us-west-2", "Región de disco debe cambiar")
 
@@ -227,6 +231,7 @@ class TestPrototypePattern(unittest.TestCase):
 
         # Verificaciones
         self.assertTrue(result.success, "Clonación debe ser exitosa")
+        assert result.vm_details is not None  # Para type checker
         vm_details = result.vm_details
         self.assertEqual(vm_details['vcpus'], 8, "vCPUs deben ser 8")
         self.assertEqual(vm_details['memoryGB'], 64, "Memoria debe ser 64GB")

@@ -84,11 +84,11 @@
 
 /* Prototype Details Card */
 .prototype-details-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(136, 136, 136, 0.151);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  color: white;
+  /*color: white;8*/
   overflow: hidden;
 }
 

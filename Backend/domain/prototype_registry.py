@@ -3,7 +3,7 @@ Domain Layer - Prototype Registry
 Gestiona un catálogo de prototipos de VMs predefinidos que pueden clonarse.
 Implementa el patrón Prototype combinado con Singleton para el registro.
 """
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 from datetime import datetime
 from domain.entities import MachineVirtual, Network, StorageDisk, VMStatus
 
@@ -223,7 +223,7 @@ class VMPrototypeRegistry:
             return prototype.clone(new_name=new_name, **customizations)
         return None
 
-    def list_prototypes(self) -> List[Dict[str, any]]:
+    def list_prototypes(self) -> List[Dict[str, Any]]:
         """
         Lista todos los prototipos disponibles con sus detalles básicos.
 
@@ -239,7 +239,7 @@ class VMPrototypeRegistry:
                 "memoryGB": vm.memoryGB,
                 "instance_type": vm.instance_type,
                 "description": self._get_prototype_description(name),
-                "disk_size_gb": vm.disks[0].size_gb if vm.disks else 0,
+                "disk_size_gb": vm.disks[0].size_gb if vm.disks and len(vm.disks) > 0 else 0,
                 "has_public_ip": vm.network.publicIP if vm.network else False
             })
         return prototypes_info

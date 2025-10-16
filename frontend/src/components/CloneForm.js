@@ -122,7 +122,7 @@ const CloneForm = ({ onSubmit }) => {
         <FaCopy className="header-icon" />
         <h2>Clonar desde Prototipo</h2>
         <p className="form-subtitle">
-          Patrón Prototype - Crea VMs basadas en configuraciones predefinidas
+          Crea VMs basadas en configuraciones predefinidas
         </p>
       </div>
 

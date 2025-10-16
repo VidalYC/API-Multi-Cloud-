@@ -366,34 +366,46 @@ class VMInstanceType:
         
         if provider == 'aws':
             if vm_type == 'standard':
-                return list(cls.AWS_TYPES.keys())[0:3][idx]
+                aws_keys = list(cls.AWS_TYPES.keys())
+                return aws_keys[0:3][idx] if idx < len(aws_keys[0:3]) else None
             elif vm_type == 'memory-optimized':
-                return list(cls.AWS_TYPES.keys())[3:6][idx]
+                aws_keys = list(cls.AWS_TYPES.keys())
+                return aws_keys[3:6][idx] if idx < len(aws_keys[3:6]) else None
             elif vm_type == 'disk-optimized':
-                return list(cls.AWS_TYPES.keys())[6:9][idx]
-        
+                aws_keys = list(cls.AWS_TYPES.keys())
+                return aws_keys[6:9][idx] if idx < len(aws_keys[6:9]) else None
+
         elif provider in ['azure']:
             if vm_type == 'standard':
-                return list(cls.AZURE_TYPES.keys())[0:3][idx]
+                azure_keys = list(cls.AZURE_TYPES.keys())
+                return azure_keys[0:3][idx] if idx < len(azure_keys[0:3]) else None
             elif vm_type == 'memory-optimized':
-                return list(cls.AZURE_TYPES.keys())[3:6][idx]
+                azure_keys = list(cls.AZURE_TYPES.keys())
+                return azure_keys[3:6][idx] if idx < len(azure_keys[3:6]) else None
             elif vm_type == 'disk-optimized':
-                return list(cls.AZURE_TYPES.keys())[6:9][idx]
-        
+                azure_keys = list(cls.AZURE_TYPES.keys())
+                return azure_keys[6:9][idx] if idx < len(azure_keys[6:9]) else None
+
         elif provider in ['google', 'gcp']:
             if vm_type == 'standard':
-                return list(cls.GCP_TYPES.keys())[0:3][idx]
+                gcp_keys = list(cls.GCP_TYPES.keys())
+                return gcp_keys[0:3][idx] if idx < len(gcp_keys[0:3]) else None
             elif vm_type == 'memory-optimized':
-                return list(cls.GCP_TYPES.keys())[3:6][idx]
+                gcp_keys = list(cls.GCP_TYPES.keys())
+                return gcp_keys[3:6][idx] if idx < len(gcp_keys[3:6]) else None
             elif vm_type == 'disk-optimized':
-                return list(cls.GCP_TYPES.keys())[6:9][idx]
-        
+                gcp_keys = list(cls.GCP_TYPES.keys())
+                return gcp_keys[6:9][idx] if idx < len(gcp_keys[6:9]) else None
+
         elif provider in ['onpremise', 'on-premise']:
             if vm_type == 'standard':
-                return list(cls.ONPREMISE_TYPES.keys())[0:3][idx]
+                onprem_keys = list(cls.ONPREMISE_TYPES.keys())
+                return onprem_keys[0:3][idx] if idx < len(onprem_keys[0:3]) else None
             elif vm_type == 'memory-optimized':
-                return list(cls.ONPREMISE_TYPES.keys())[3:6][idx]
+                onprem_keys = list(cls.ONPREMISE_TYPES.keys())
+                return onprem_keys[3:6][idx] if idx < len(onprem_keys[3:6]) else None
             elif vm_type == 'disk-optimized':
-                return list(cls.ONPREMISE_TYPES.keys())[6:9][idx]
-        
+                onprem_keys = list(cls.ONPREMISE_TYPES.keys())
+                return onprem_keys[6:9][idx] if idx < len(onprem_keys[6:9]) else None
+
         return None
