@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowLeft, FaBolt, FaTools, FaBookOpen } from 'react-icons/fa';
+import { FaArrowLeft, FaBolt, FaTools, FaBookOpen, FaCopy } from 'react-icons/fa';
 import { getProviders } from '../services/apiService';
 import ProvisionForm from './ProvisionForm';
 import BuildForm from './BuildForm';
 import PresetForm from './PresetForm';
+import CloneForm from './CloneForm';
 import ResultModal from './ResultModal';
 import './ToolPage.css';
 
@@ -49,7 +50,8 @@ const ToolPage = ({ onBackToHome }) => {
     const tabConfig = [
         { id: 'quick', label: 'Provisión Rápida', icon: <FaBolt />, color: '#28a745' },
         { id: 'custom', label: 'Construcción Personalizada', icon: <FaTools />, color: '#ff8c00' },
-        { id: 'template', label: 'Usar Plantilla', icon: <FaBookOpen />, color: '#6a5acd' }
+        { id: 'template', label: 'Usar Plantilla', icon: <FaBookOpen />, color: '#6a5acd' },
+        { id: 'clone', label: 'Clonar desde Prototipo', icon: <FaCopy />, color: '#667eea' }
     ];
 
     const renderContent = () => {
@@ -60,6 +62,8 @@ const ToolPage = ({ onBackToHome }) => {
                 return <BuildForm providers={providers} onResult={handleResult} />;
             case 'template':
                 return <PresetForm providers={providers} onResult={handleResult} />;
+            case 'clone':
+                return <CloneForm onSubmit={handleResult} />;
             default:
                 return null;
         }

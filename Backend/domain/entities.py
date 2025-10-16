@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Optional, Dict, Any, List
+import copy
+import uuid
 
 
 class VMStatus(Enum):
@@ -39,6 +41,19 @@ class Network:
             "publicIP": self.publicIP
         }
 
+    def clone(self, new_name: Optional[str] = None) -> 'Network':
+        """
+        Patrón Prototype: Clona la red creando una copia profunda.
+        Genera un nuevo networkId único y opcionalmente cambia el nombre.
+        """
+        cloned = copy.deepcopy(self)
+        cloned.networkId = f"{self.provider}-net-{uuid.uuid4().hex[:8]}"
+        if new_name:
+            cloned.name = new_name
+        else:
+            cloned.name = f"{self.name}-clone"
+        return cloned
+
 
 @dataclass
 class StorageDisk:
@@ -65,6 +80,21 @@ class StorageDisk:
             "region": self.region,
             "iops": self.iops
         }
+
+    def clone(self, new_name: Optional[str] = None, new_size: Optional[int] = None) -> 'StorageDisk':
+        """
+        Patrón Prototype: Clona el disco creando una copia profunda.
+        Genera un nuevo diskId único y permite personalizar nombre y tamaño.
+        """
+        cloned = copy.deepcopy(self)
+        cloned.diskId = f"{self.provider}-disk-{uuid.uuid4().hex[:8]}"
+        if new_name:
+            cloned.name = new_name
+        else:
+            cloned.name = f"{self.name}-clone"
+        if new_size:
+            cloned.size_gb = new_size
+        return cloned
 
 
 @dataclass
@@ -114,6 +144,95 @@ class MachineVirtual:
             "network": self.network.to_dict() if self.network else None,
             "disks": [d.to_dict() for d in self.disks] if self.disks else []
         }
+
+    def clone(self, new_name: Optional[str] = None, **customizations) -> 'MachineVirtual':
+        """
+        Patrón Prototype: Clona la VM creando una copia profunda.
+
+        Args:
+            new_name: Nuevo nombre para la VM clonada
+            **customizations: Parámetros opcionales para personalizar el clon:
+                - vcpus: Número de vCPUs
+                - memoryGB: Memoria RAM en GB
+                - region: Nueva región (también clonará network y disks con nueva región)
+                - clone_network: Si False, no clona la red (default: True)
+                - clone_disks: Si False, no clona los discos (default: True)
+
+        Returns:
+            Nueva instancia de MachineVirtual clonada
+        """
+        # Crear copia profunda de la VM
+        cloned = copy.deepcopy(self)
+
+        # Generar nuevo ID único
+        cloned.vmId = f"{self.provider}-vm-{uuid.uuid4().hex[:8]}"
+
+        # Establecer nombre
+        if new_name:
+            cloned.name = new_name
+        else:
+            cloned.name = f"{self.name}-clone"
+
+        # Resetear timestamp y status
+        cloned.createdAt = datetime.now()
+        cloned.status = VMStatus.PENDING
+
+        # Aplicar customizaciones opcionales
+        if 'vcpus' in customizations:
+            cloned.vcpus = customizations['vcpus']
+
+        if 'memoryGB' in customizations:
+            cloned.memoryGB = customizations['memoryGB']
+
+        if 'instance_type' in customizations:
+            cloned.instance_type = customizations['instance_type']
+
+        if 'memoryOptimization' in customizations:
+            cloned.memoryOptimization = customizations['memoryOptimization']
+
+        if 'diskOptimization' in customizations:
+            cloned.diskOptimization = customizations['diskOptimization']
+
+        if 'keyPairName' in customizations:
+            cloned.keyPairName = customizations['keyPairName']
+
+        # Clonar network si existe y no se especifica lo contrario
+        clone_network = customizations.get('clone_network', True)
+        new_region = customizations.get('region')
+
+        if cloned.network and clone_network:
+            network_name = f"{cloned.name}-network"
+            cloned.network = cloned.network.clone(new_name=network_name)
+            if new_region:
+                cloned.network.region = new_region
+
+        # Clonar disks si existen y no se especifica lo contrario
+        clone_disks = customizations.get('clone_disks', True)
+
+        if cloned.disks and clone_disks:
+            cloned_disks = []
+            for idx, disk in enumerate(cloned.disks):
+                disk_name = f"{cloned.name}-disk-{idx}"
+                cloned_disk = disk.clone(new_name=disk_name)
+                if new_region:
+                    cloned_disk.region = new_region
+                cloned_disks.append(cloned_disk)
+            cloned.disks = cloned_disks
+
+        return cloned
+
+    def customize(self, **kwargs) -> 'MachineVirtual':
+        """
+        Permite personalizar atributos de la VM después de crearla.
+        Útil para modificar configuraciones específicas sin reconstruir toda la VM.
+
+        Returns:
+            La misma instancia modificada (patrón Fluent Interface)
+        """
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        return self
 
 
 @dataclass

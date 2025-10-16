@@ -3,7 +3,7 @@ Domain Layer - Interfaces
 Abstracciones que definen contratos (DIP - Dependency Inversion Principle)
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from domain.entities import MachineVirtual, Network, StorageDisk
 
 
@@ -60,5 +60,31 @@ class ProveedorAbstracto(ABC):
         vm = self.crear_vm()
         vm.network = network
         vm.disks = [disk]
-        
+
         return vm
+
+
+class Prototype(ABC):
+    """
+    Patrón Prototype: Define la interfaz para clonar objetos.
+    Permite crear nuevas instancias copiando objetos existentes sin conocer sus clases concretas.
+
+    Aplicando OCP: Nuevos tipos de prototipos pueden agregarse sin modificar código existente.
+    Aplicando DIP: Los clientes dependen de esta abstracción, no de implementaciones concretas.
+    """
+
+    @abstractmethod
+    def clone(self) -> 'Prototype':
+        """
+        Crea y retorna una copia profunda del objeto.
+        Cada implementación debe manejar la clonación de sus atributos específicos.
+        """
+        pass
+
+    @abstractmethod
+    def customize(self, **kwargs) -> 'Prototype':
+        """
+        Permite personalizar el clon con nuevos valores.
+        Útil para modificar atributos específicos después de clonar.
+        """
+        pass

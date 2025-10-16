@@ -15,6 +15,7 @@ import logging
 from typing import Dict, Any
 
 from application.factory import VMProvisioningService, VMBuildingService
+from application.clone_service import VMCloneService
 
 # Configuración de logging
 logging.basicConfig(
@@ -30,6 +31,7 @@ CORS(app)  # Habilitar CORS
 # Services (DIP: Inyección de dependencia)
 provisioning_service = VMProvisioningService()
 building_service = VMBuildingService()
+clone_service = VMCloneService()
 
 
 @app.route('/health', methods=['GET'])
@@ -561,6 +563,128 @@ def build_disk_optimized_vm():
         }), 500
 
 
+@app.route('/api/vm/clone', methods=['POST'])
+def clone_vm():
+    """
+    Endpoint para clonar VMs usando el Patrón Prototype
+
+    Request Body (JSON):
+    {
+        "prototype_name": "aws-web-server",
+        "new_vm_name": "web-server-production",
+        "customizations": {
+            "vcpus": 4,
+            "memoryGB": 8,
+            "region": "us-west-2"
+        }
+    }
+
+    Returns:
+        JSON con resultado de la clonación
+    """
+    try:
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': 'Content-Type debe ser application/json'
+            }), 400
+
+        data: Dict[str, Any] = request.get_json()
+
+        # Validar parámetros requeridos
+        if 'prototype_name' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Parámetro "prototype_name" es requerido',
+                'example': {
+                    'prototype_name': 'aws-web-server',
+                    'new_vm_name': 'my-cloned-vm',
+                    'customizations': {
+                        'vcpus': 4,
+                        'memoryGB': 8
+                    }
+                }
+            }), 400
+
+        if 'new_vm_name' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Parámetro "new_vm_name" es requerido'
+            }), 400
+
+        prototype_name = str(data.get('prototype_name', ''))
+        new_vm_name = str(data.get('new_vm_name', ''))
+        customizations = data.get('customizations', {})
+
+        logger.info(f"Solicitud de clonación - Prototipo: {prototype_name}, Nuevo nombre: {new_vm_name}")
+
+        # Llamar al servicio de clonación
+        result = clone_service.clone_from_prototype(
+            prototype_name=prototype_name,
+            new_vm_name=new_vm_name,
+            customizations=customizations
+        )
+
+        response = result.to_dict()
+        status_code = 200 if result.success else 400
+
+        return jsonify(response), status_code
+
+    except Exception as e:
+        logger.error(f"Error en endpoint de clonación: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
+@app.route('/api/prototypes', methods=['GET'])
+def list_prototypes():
+    """
+    Endpoint para listar prototipos disponibles
+
+    Returns:
+        JSON con lista de prototipos y sus detalles
+    """
+    try:
+        result = clone_service.list_available_prototypes()
+        return jsonify(result), 200
+
+    except Exception as e:
+        logger.error(f"Error al listar prototipos: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
+@app.route('/api/prototypes/<name>', methods=['GET'])
+def get_prototype_details(name: str):
+    """
+    Endpoint para obtener detalles de un prototipo específico
+
+    Args:
+        name: Nombre del prototipo
+
+    Returns:
+        JSON con detalles del prototipo
+    """
+    try:
+        result = clone_service.get_prototype_details(name)
+        status_code = 200 if result.get('success', False) else 404
+        return jsonify(result), status_code
+
+    except Exception as e:
+        logger.error(f"Error al obtener detalles del prototipo: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor',
+            'detail': str(e)
+        }), 500
+
+
 @app.errorhandler(404)
 def not_found(error):
     """Manejador de rutas no encontradas"""
@@ -577,7 +701,10 @@ def not_found(error):
             'POST /api/vm/build/preset',
             'POST /api/vm/build/standard',
             'POST /api/vm/build/memory-optimized',
-            'POST /api/vm/build/disk-optimized'
+            'POST /api/vm/build/disk-optimized',
+            'POST /api/vm/clone',
+            'GET /api/prototypes',
+            'GET /api/prototypes/<name>'
         ]
     }), 404
 
