@@ -1,7 +1,3 @@
-"""
-OnPremise VM Builder - Concrete Builder para On-Premise
-Implementa construcción paso a paso de VMs On-Premise
-"""
 import uuid
 from datetime import datetime
 from typing import Optional, Dict, Any
@@ -14,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class OnPremiseVMBuilder(VMBuilder):
-    """Builder concreto para OnPremise con parámetros del PDF (Página 4)"""
+    
 
     def __init__(self):
         super().__init__()

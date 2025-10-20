@@ -1,12 +1,9 @@
 import axios from 'axios';
 
-// La URL base de tu API backend
+
 const API_URL = 'http://localhost:5000';
 
-/**
- * Obtiene la lista de proveedores disponibles.
- * Corresponde a: GET /api/providers
- */
+
 export const getProviders = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/providers`);
@@ -17,10 +14,7 @@ export const getProviders = async () => {
     }
 };
 
-/**
- * Aprovisiona una VM usando el Factory Pattern.
- * Corresponde a: POST /api/vm/provision
- */
+
 export const provisionVm = async (payload) => {
     try {
         const response = await axios.post(`${API_URL}/api/vm/provision`, payload);
@@ -31,10 +25,7 @@ export const provisionVm = async (payload) => {
     }
 };
 
-/**
- * Construye una VM personalizada usando el Builder Pattern.
- * Corresponde a: POST /api/vm/build
- */
+
 export const buildVm = async (payload) => {
     try {
         const response = await axios.post(`${API_URL}/api/vm/build`, payload);
@@ -45,10 +36,7 @@ export const buildVm = async (payload) => {
     }
 };
 
-/**
- * Construye una VM predefinida usando el Director Pattern.
- * Corresponde a: POST /api/vm/build/preset
- */
+
 export const buildPresetVm = async (payload) => {
     try {
         const response = await axios.post(`${API_URL}/api/vm/build/preset`, payload);
@@ -59,10 +47,7 @@ export const buildPresetVm = async (payload) => {
     }
 };
 
-/**
- * Clona una VM desde un prototipo usando el Prototype Pattern.
- * Corresponde a: POST /api/vm/clone
- */
+
 export const cloneVm = async (payload) => {
     try {
         const response = await axios.post(`${API_URL}/api/vm/clone`, payload);
@@ -73,10 +58,7 @@ export const cloneVm = async (payload) => {
     }
 };
 
-/**
- * Obtiene la lista de prototipos disponibles.
- * Corresponde a: GET /api/prototypes
- */
+
 export const getPrototypes = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/prototypes`);
@@ -87,10 +69,7 @@ export const getPrototypes = async () => {
     }
 };
 
-/**
- * Obtiene los detalles de un prototipo específico.
- * Corresponde a: GET /api/prototypes/<name>
- */
+
 export const getPrototypeDetails = async (name) => {
     try {
         const response = await axios.get(`${API_URL}/api/prototypes/${name}`);

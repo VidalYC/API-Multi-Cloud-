@@ -82,13 +82,13 @@
   color: #718096;
 }
 
-/* Prototype Details Card */
+
 .prototype-details-card {
   background: rgba(136, 136, 136, 0.151);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  /*color: white;8*/
+  
   overflow: hidden;
 }
 
@@ -156,7 +156,7 @@
   border: 1px solid rgba(128, 128, 128, 0.5);
 }
 
-/* Customizations Toggle */
+
 .customizations-toggle {
   margin: 1.5rem 0;
   padding: 1rem;
@@ -183,7 +183,7 @@
   user-select: none;
 }
 
-/* Customizations Section */
+
 .customizations-section {
   background: #f7fafc;
   border-radius: 8px;
@@ -204,7 +204,7 @@
   gap: 1rem;
 }
 
-/* Submit Button */
+
 .submit-button {
   width: 100%;
   padding: 1rem 2rem;
@@ -246,7 +246,7 @@
   }
 }
 
-/* Info Box */
+
 .info-box {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -287,7 +287,7 @@
   margin-bottom: 0.25rem;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .clone-form-container {
     padding: 1rem;

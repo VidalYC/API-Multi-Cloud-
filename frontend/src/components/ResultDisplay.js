@@ -22,7 +22,7 @@ const getProviderIcon = (provider) => {
 const ResultDisplay = ({ result }) => {
     if (!result) return null;
 
-    // Manejo de errores desde la API
+    
     if (!result.success) {
         return (
             <div className="result-card-container error">
@@ -36,7 +36,7 @@ const ResultDisplay = ({ result }) => {
     const vm = result.vm_details;
     if (!vm) return null;
 
-    // El backend devuelve a veces 'disks' y a veces 'storage'
+    
     const disks = vm.disks || vm.storage || [];
     const disk = disks.length > 0 ? disks[0] : null;
     const compute = vm.compute || {};

@@ -21,7 +21,7 @@ class AWS(ProveedorAbstracto):
         vm_id = f"aws-{uuid.uuid4()}"
         logger.info(f"Creando VM en AWS - ID: {vm_id}, Tipo: {self.instance_type}, Región: {self.region}")
         
-        # Valores por defecto de vCPU y memoria según instance type
+        
         vcpu_ram_map = {
             't2.micro': (1, 1),
             't2.small': (1, 2),
@@ -38,11 +38,11 @@ class AWS(ProveedorAbstracto):
             status=VMStatus.RUNNING,
             createdAt=datetime.now(),
             provider="aws",
-            vcpus=vcpus,  # ✅ Parámetro obligatorio del PDF
-            memoryGB=memoryGB,  # ✅ Parámetro obligatorio del PDF
-            memoryOptimization=False,  # ✅ Parámetro opcional del PDF
-            diskOptimization=False,  # ✅ Parámetro opcional del PDF
-            keyPairName=self.config.get('keyPairName'),  # ✅ Parámetro opcional del PDF
+            vcpus=vcpus,  
+            memoryGB=memoryGB,  
+            memoryOptimization=False,  
+            diskOptimization=False,  
+            keyPairName=self.config.get('keyPairName'),  
             instance_type=self.instance_type
         )
         return vm
@@ -56,9 +56,9 @@ class AWS(ProveedorAbstracto):
             name=f"aws-net-{self.region}",
             cidr_block="10.0.0.0/16",
             provider="aws",
-            region=self.region,  # ✅ OBLIGATORIO según PDF página 2
-            firewallRules=self.config.get('firewallRules'),  # ✅ OPCIONAL según PDF
-            publicIP=self.config.get('publicIP')  # ✅ OPCIONAL según PDF
+            region=self.region,  
+            firewallRules=self.config.get('firewallRules'),  
+            publicIP=self.config.get('publicIP')  
         )
 
     def crear_disk(self) -> StorageDisk:
@@ -73,6 +73,6 @@ class AWS(ProveedorAbstracto):
             size_gb=size_gb,
             disk_type=volume_type,
             provider="aws",
-            region=self.region,  # ✅ OBLIGATORIO según PDF página 2
-            iops=self.config.get('iops')  # ✅ OPCIONAL según PDF
+            region=self.region,  
+            iops=self.config.get('iops')  
         )

@@ -47,7 +47,7 @@ class OnPremise(ProveedorAbstracto):
             name=f"prod-net-{vlan_id}",
             cidr_block="192.168.1.0/24",
             provider="on-premise",
-            region=self.datacenter,  # ✅ OBLIGATORIO
+            region=self.datacenter,  
             firewallRules=self.config.get('firewallRules'),
             publicIP=self.config.get('publicIP')
         )
@@ -64,6 +64,6 @@ class OnPremise(ProveedorAbstracto):
             size_gb=size_gb,
             disk_type=f"RAID-{raid_level}",
             provider="on-premise",
-            region=self.datacenter,  # ✅ OBLIGATORIO
+            region=self.datacenter,  
             iops=self.config.get('iops')
         )

@@ -53,7 +53,7 @@ class Google(ProveedorAbstracto):
             name=net_name,
             cidr_block="10.2.0.0/16",
             provider="google",
-            region=self.zone,  # ✅ OBLIGATORIO
+            region=self.zone,  
             firewallRules=self.config.get('firewallRules'),
             publicIP=self.config.get('publicIP')
         )
@@ -70,6 +70,6 @@ class Google(ProveedorAbstracto):
             size_gb=size_gb,
             disk_type=disk_type,
             provider="google",
-            region=self.zone,  # ✅ OBLIGATORIO
+            region=self.zone,  
             iops=self.config.get('iops')
         )

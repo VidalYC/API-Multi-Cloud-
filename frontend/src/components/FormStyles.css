@@ -1,4 +1,4 @@
-/* Contenedor principal del formulario */
+
 .form-modern-container {
     background: white;
     border-radius: 20px;
@@ -6,7 +6,7 @@
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Header del formulario */
+
 .form-header {
     display: flex;
     align-items: center;
@@ -28,7 +28,7 @@
     background: linear-gradient(135deg, #1e88a8 0%, #00d4ff 100%);
 }
 
-/* Variantes con diferentes intensidades */
+
 .form-icon-badge.factory {
     background: linear-gradient(135deg, #00d4ff 0%, #1e88a8 100%);
 }
@@ -55,7 +55,7 @@
     line-height: 1.5;
 }
 
-/* Layout del formulario */
+
 form {
     padding: 2rem;
 }
@@ -71,7 +71,7 @@ form {
     grid-column: 1 / -1;
 }
 
-/* Campos del formulario */
+
 .form-field-modern {
     display: flex;
     flex-direction: column;
@@ -138,14 +138,14 @@ form {
     font-style: italic;
 }
 
-/* Inputs de solo lectura */
+
 .readonly-input {
     background: #f8f9fa !important;
     cursor: not-allowed;
     color: #6c757d;
 }
 
-/* Checkboxes modernos */
+
 .checkbox-group-modern {
     display: flex;
     flex-direction: column;
@@ -183,7 +183,7 @@ form {
     font-weight: 500;
 }
 
-/* Fieldsets */
+
 fieldset {
     border: 2px solid #e9ecef;
     border-radius: 15px;
@@ -198,7 +198,7 @@ fieldset legend {
     padding: 0 0.75rem;
 }
 
-/* Botones de submit */
+
 .submit-button-modern {
     width: 100%;
     padding: 1.25rem 2rem;
@@ -261,7 +261,7 @@ fieldset legend {
     transform: translateY(0);
 }
 
-/* Spinner pequeño para botones */
+
 .spinner-small {
     width: 20px;
     height: 20px;
@@ -277,7 +277,7 @@ fieldset legend {
     }
 }
 
-/* Footer info del formulario */
+
 .form-footer-info {
     padding: 1.5rem 2rem;
     background: #f8f9fa;
@@ -305,7 +305,7 @@ fieldset legend {
     font-size: 0.9rem;
 }
 
-/* Secciones colapsables */
+
 .collapsible-section {
     margin-bottom: 2rem;
 }
@@ -352,7 +352,7 @@ fieldset legend {
     border: 2px solid #e9ecef;
 }
 
-/* Tarjetas de selección */
+
 .selection-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -399,7 +399,7 @@ fieldset legend {
     color: #6c757d;
 }
 
-/* Tags/Chips */
+
 .tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -424,7 +424,7 @@ fieldset legend {
     color: white;
 }
 
-/* Alertas inline */
+
 .inline-alert {
     padding: 1rem 1.25rem;
     border-radius: 12px;
@@ -457,7 +457,7 @@ fieldset legend {
     flex-shrink: 0;
 }
 
-/* Tooltips */
+
 .tooltip-wrapper {
     position: relative;
     display: inline-block;
@@ -478,7 +478,7 @@ fieldset legend {
     margin-left: 0.5rem;
 }
 
-/* Progress steps */
+
 .progress-steps {
     display: flex;
     justify-content: space-between;
@@ -546,7 +546,7 @@ fieldset legend {
     font-weight: 600;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
     .form-header {
         flex-direction: column;

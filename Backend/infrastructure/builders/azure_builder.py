@@ -10,9 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class AzureVMBuilder(VMBuilder):
-    """
-    Builder concreto para Azure con parámetros del PDF (Página 3)
-    """
+    
     
     def __init__(self):
         super().__init__()
@@ -20,7 +18,7 @@ class AzureVMBuilder(VMBuilder):
             'provider': 'azure',
             'location': 'eastus',
             'resource_group': 'default-rg',
-            'size': 'D2s_v3',  # Default: Standard VM
+            'size': 'D2s_v3',  
             'vcpus': 2,
             'memoryGB': 8,
             'disk_sku': 'Standard_LRS',
@@ -38,29 +36,27 @@ class AzureVMBuilder(VMBuilder):
         return self
 
     def set_basic_config(self, name: str, vm_type: str) -> 'AzureVMBuilder':
-        """
-        Configura el tipo de VM según el PDF (Página 3)
-        """
+        
         self._config['name'] = name
         self._config['vm_type'] = vm_type
         
-        # Mapeo de tipos de VM según PDF
+        
         if vm_type == 'standard':
-            self._config['size'] = 'D2s_v3'  # Standard / General Purpose
+            self._config['size'] = 'D2s_v3'  
             self._config['memoryOptimization'] = False
             self._config['diskOptimization'] = False
         elif vm_type == 'memory-optimized':
-            self._config['size'] = 'E2s_v3'  # Memory-Optimized
+            self._config['size'] = 'E2s_v3'  
             self._config['memoryOptimization'] = True
             self._config['diskOptimization'] = False
         elif vm_type == 'disk-optimized':
-            self._config['size'] = 'F2s_v2'  # Compute-Optimized
+            self._config['size'] = 'F2s_v2'  
             self._config['memoryOptimization'] = False
             self._config['diskOptimization'] = True
         else:
             self._config['size'] = vm_type
         
-        # Obtener especificaciones automáticas
+        
         specs = VMInstanceType.get_specs('azure', self._config['size'])
         if specs:
             self._config['vcpus'] = specs['vcpus']
@@ -70,10 +66,7 @@ class AzureVMBuilder(VMBuilder):
         return self
 
     def set_instance_type(self, instance_type: str) -> 'AzureVMBuilder':
-        """
-        Configura un size específico de Azure
-        Ejemplo: D2s_v3, E4s_v3, F8s_v2
-        """
+       
         self._config['size'] = instance_type
         
         specs = VMInstanceType.get_specs('azure', instance_type)
@@ -87,7 +80,7 @@ class AzureVMBuilder(VMBuilder):
         return self
 
     def set_compute_resources(self, cpu: Optional[int] = None, ram: Optional[int] = None) -> 'AzureVMBuilder':
-        """Configura recursos de cómputo"""
+        
         if cpu is not None:
             self._config['vcpus'] = cpu
         if ram is not None:
@@ -98,7 +91,7 @@ class AzureVMBuilder(VMBuilder):
 
     def set_storage(self, size_gb: int, disk_type: Optional[str] = None,
                     iops: Optional[int] = None) -> 'AzureVMBuilder':
-        """Configura almacenamiento con IOPS opcional del PDF"""
+        
         self._config['size_gb'] = size_gb
         
         disk_mapping = {
@@ -157,29 +150,29 @@ class AzureVMBuilder(VMBuilder):
         """Construye la VM con validación de región"""
         location = self._config.get('location', 'eastus')
         
-        # Network con región obligatoria
+        
         network = Network(
             networkId=self._config.get('vnet_name', f"vnet-{self._config['resource_group']}"),
             name=self._config.get('vnet_name', 'default-vnet'),
             cidr_block=self._config.get('cidr_block', '10.1.0.0/16'),
             provider='azure',
-            region=location,  # ✅ OBLIGATORIO
+            region=location,  
             firewallRules=self._config.get('firewallRules'),
             publicIP=self._config.get('publicIP')
         )
         
-        # Disk con región obligatoria
+        
         disk = StorageDisk(
             diskId=f"disk-{uuid.uuid4().hex[:8]}",
             name=f"azure-disk-{self._config.get('disk_sku', 'Standard_LRS')}",
             size_gb=self._config.get('size_gb', 50),
             disk_type=self._config.get('disk_sku', 'Standard_LRS'),
             provider='azure',
-            region=location,  # ✅ OBLIGATORIO
+            region=location,  
             iops=self._config.get('iops')
         )
         
-        # ✅ VALIDACIÓN DE REGIÓN
+        
         if network.region != disk.region:
             raise ValueError(f"Error de coherencia de región: Network={network.region}, Disk={disk.region}")
         

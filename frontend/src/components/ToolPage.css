@@ -3,7 +3,7 @@
     background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 50%, #dee2e6 100%);
 }
 
-/* Header */
+
 .tool-header {
     background: linear-gradient(135deg, #0a3d62 0%, #1e88a8 100%);
     padding: 2rem;
@@ -58,14 +58,14 @@
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Contenedor principal */
+
 .tool-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-/* Tabs mejoradas */
+
 .tabs-enhanced {
     display: flex;
     gap: 1rem;
@@ -149,7 +149,7 @@
     z-index: -1;
 }
 
-/* Área de formularios */
+
 .form-area {
     background: white;
     border-radius: 25px;
@@ -158,7 +158,7 @@
     min-height: 600px;
 }
 
-/* Loading */
+
 .loading-container {
     display: flex;
     flex-direction: column;
@@ -182,7 +182,7 @@
     color: #6c757d;
 }
 
-/* Error banner */
+
 .error-banner {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
     color: white;
@@ -211,7 +211,7 @@
     opacity: 0.95;
 }
 
-/* Responsive */
+
 @media (max-width: 1024px) {
     .tool-container {
         padding: 1.5rem;

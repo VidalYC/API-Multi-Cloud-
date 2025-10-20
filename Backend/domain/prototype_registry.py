@@ -1,38 +1,24 @@
-"""
-Domain Layer - Prototype Registry
-Gestiona un catálogo de prototipos de VMs predefinidos que pueden clonarse.
-Implementa el patrón Prototype combinado con Singleton para el registro.
-"""
 from typing import Dict, Optional, List, Any
 from datetime import datetime
 from domain.entities import MachineVirtual, Network, StorageDisk, VMStatus
 
 
 class VMPrototypeRegistry:
-    """
-    Patrón Prototype Registry: Gestiona un catálogo de prototipos de VMs.
-    Permite registrar, obtener y clonar VMs predefinidas.
 
-    Aplicando SRP: Responsabilidad única de gestionar el catálogo de prototipos.
-    Aplicando OCP: Permite agregar nuevos prototipos sin modificar la clase.
-    """
 
     _instance = None
     _prototypes: Dict[str, MachineVirtual] = {}
 
     def __new__(cls):
-        """Singleton: Asegura una única instancia del registro."""
+        
         if cls._instance is None:
             cls._instance = super(VMPrototypeRegistry, cls).__new__(cls)
             cls._instance._initialize_default_prototypes()
         return cls._instance
 
     def _initialize_default_prototypes(self):
-        """
-        Inicializa prototipos predefinidos para casos de uso comunes.
-        Estos prototipos pueden clonarse para crear VMs rápidamente.
-        """
-        # Prototipo: Servidor Web AWS
+       
+        
         self.register_prototype(
             "aws-web-server",
             MachineVirtual(
@@ -70,7 +56,7 @@ class VMPrototypeRegistry:
             )
         )
 
-        # Prototipo: Base de Datos Azure (Memory-Optimized)
+        
         self.register_prototype(
             "azure-database",
             MachineVirtual(
@@ -108,7 +94,7 @@ class VMPrototypeRegistry:
             )
         )
 
-        # Prototipo: Procesamiento de Datos GCP (Disk-Optimized)
+        
         self.register_prototype(
             "gcp-data-processing",
             MachineVirtual(
@@ -146,7 +132,7 @@ class VMPrototypeRegistry:
             )
         )
 
-        # Prototipo: Desarrollo/Testing On-Premise (Minimal)
+        
         self.register_prototype(
             "onpremise-dev",
             MachineVirtual(
@@ -185,51 +171,22 @@ class VMPrototypeRegistry:
         )
 
     def register_prototype(self, name: str, prototype: MachineVirtual) -> None:
-        """
-        Registra un nuevo prototipo en el catálogo.
-
-        Args:
-            name: Identificador único del prototipo
-            prototype: Instancia de MachineVirtual a usar como prototipo
-        """
+       
         self._prototypes[name] = prototype
 
     def get_prototype(self, name: str) -> Optional[MachineVirtual]:
-        """
-        Obtiene un prototipo del catálogo (sin clonarlo).
-
-        Args:
-            name: Identificador del prototipo
-
-        Returns:
-            Prototipo si existe, None en caso contrario
-        """
+        
         return self._prototypes.get(name)
 
     def clone_prototype(self, name: str, new_name: Optional[str] = None, **customizations) -> Optional[MachineVirtual]:
-        """
-        Clona un prototipo del catálogo con opciones de personalización.
-
-        Args:
-            name: Identificador del prototipo a clonar
-            new_name: Nombre para la VM clonada
-            **customizations: Parámetros para personalizar el clon
-
-        Returns:
-            Nueva VM clonada o None si el prototipo no existe
-        """
+        
         prototype = self.get_prototype(name)
         if prototype:
             return prototype.clone(new_name=new_name, **customizations)
         return None
 
     def list_prototypes(self) -> List[Dict[str, Any]]:
-        """
-        Lista todos los prototipos disponibles con sus detalles básicos.
-
-        Returns:
-            Lista de diccionarios con información de cada prototipo
-        """
+       
         prototypes_info = []
         for name, vm in self._prototypes.items():
             prototypes_info.append({
@@ -245,7 +202,7 @@ class VMPrototypeRegistry:
         return prototypes_info
 
     def _get_prototype_description(self, name: str) -> str:
-        """Retorna una descripción amigable del prototipo."""
+        
         descriptions = {
             "aws-web-server": "Servidor web en AWS con balanceo de carga y acceso público",
             "azure-database": "Servidor de base de datos optimizado para memoria en Azure",
@@ -255,20 +212,12 @@ class VMPrototypeRegistry:
         return descriptions.get(name, "Prototipo personalizado")
 
     def remove_prototype(self, name: str) -> bool:
-        """
-        Elimina un prototipo del catálogo.
-
-        Args:
-            name: Identificador del prototipo a eliminar
-
-        Returns:
-            True si se eliminó, False si no existía
-        """
+       
         if name in self._prototypes:
             del self._prototypes[name]
             return True
         return False
 
     def prototype_exists(self, name: str) -> bool:
-        """Verifica si un prototipo existe en el catálogo."""
+       
         return name in self._prototypes

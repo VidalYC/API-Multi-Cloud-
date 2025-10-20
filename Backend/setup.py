@@ -1,6 +1,3 @@
-"""
-Setup configuration for VM Provisioning API
-"""
 from setuptools import setup, find_packages
 
 setup(

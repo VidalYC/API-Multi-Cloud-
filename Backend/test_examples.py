@@ -1,7 +1,3 @@
-"""
-Ejemplos de uso de la API - Testing manual
-Ejecuta este archivo para ver ejemplos de uso de los endpoints
-"""
 import requests
 import json
 
@@ -10,7 +6,7 @@ BASE_URL = "http://localhost:5000"
 
 
 def print_response(title, response):
-    """Imprime la respuesta de forma formateada"""
+    
     print(f"\n{'='*70}")
     print(f"{title}")
     print(f"{'='*70}")
@@ -20,19 +16,19 @@ def print_response(title, response):
 
 
 def test_health_check():
-    """Test 1: Health Check"""
+    
     response = requests.get(f"{BASE_URL}/health")
     print_response("TEST 1: Health Check", response)
 
 
 def test_get_providers():
-    """Test 2: Listar Proveedores"""
+    
     response = requests.get(f"{BASE_URL}/api/providers")
     print_response("TEST 2: Listar Proveedores", response)
 
 
 def test_provision_aws():
-    """Test 3: Provisionar VM en AWS (Factory Pattern)"""
+    
     payload = {
         "provider": "aws",
         "config": {
@@ -50,7 +46,7 @@ def test_provision_aws():
 
 
 def test_build_custom_azure():
-    """Test 4: Construir VM Personalizada en Azure (Builder Pattern)"""
+    
     payload = {
         "provider": "azure",
         "build_config": {
@@ -76,7 +72,7 @@ def test_build_custom_azure():
 
 
 def test_build_preset_minimal():
-    """Test 5: Construir VM Predefinida Minimal (Director)"""
+    
     payload = {
         "provider": "google",
         "preset": "minimal",
@@ -91,7 +87,7 @@ def test_build_preset_minimal():
 
 
 def test_build_preset_high_performance():
-    """Test 6: Construir VM Predefinida High Performance (Director)"""
+    
     payload = {
         "provider": "onpremise",
         "preset": "high-performance",
@@ -106,7 +102,7 @@ def test_build_preset_high_performance():
 
 
 def test_provision_invalid_provider():
-    """Test 7: Error - Proveedor Inválido"""
+    
     payload = {
         "provider": "invalid_cloud",
         "config": {
@@ -121,7 +117,7 @@ def test_provision_invalid_provider():
 
 
 def run_all_tests():
-    """Ejecuta todos los tests de ejemplo"""
+    
     print("\n" + "="*70)
     print("EJEMPLOS DE USO DE LA API MULTI-CLOUD VM PROVISIONING")
     print("Patrones: Factory Method + Builder + Director")

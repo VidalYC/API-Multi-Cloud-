@@ -75,7 +75,7 @@ const ResultModal = ({ result, onClose }) => {
                 animate="visible"
                 exit="exit"
             >
-                {/* Header del modal */}
+                
                 <div className="modal-header success-header">
                     <div className="modal-header-icon">
                         <FaCheckCircle size={50} />
@@ -89,7 +89,7 @@ const ResultModal = ({ result, onClose }) => {
                     </button>
                 </div>
 
-                {/* Información principal */}
+                
                 <div className="modal-body">
                     <div className="vm-header-card">
                         <div className="provider-icon-large">
@@ -114,9 +114,9 @@ const ResultModal = ({ result, onClose }) => {
                         </div>
                     </div>
 
-                    {/* Detalles en grid */}
+                    
                     <div className="details-grid">
-                        {/* Proveedor y Ubicación */}
+                        
                         <div className="detail-card">
                             <h4>🌐 Proveedor y Ubicación</h4>
                             <div className="detail-row">
@@ -139,7 +139,7 @@ const ResultModal = ({ result, onClose }) => {
                             )}
                         </div>
 
-                        {/* Recursos de Cómputo */}
+                        
                         <div className="detail-card">
                             <h4>💻 Recursos de Cómputo</h4>
                             {vm.vcpus && (
@@ -172,7 +172,7 @@ const ResultModal = ({ result, onClose }) => {
                             )}
                         </div>
 
-                        {/* Red */}
+                        
                         {network && (
                             <div className="detail-card">
                                 <h4>🌐 Configuración de Red</h4>
@@ -213,7 +213,7 @@ const ResultModal = ({ result, onClose }) => {
                             </div>
                         )}
 
-                        {/* Almacenamiento */}
+                        
                         {disk && (
                             <div className="detail-card">
                                 <h4>💾 Almacenamiento</h4>
@@ -238,7 +238,7 @@ const ResultModal = ({ result, onClose }) => {
                             </div>
                         )}
 
-                        {/* Información Adicional */}
+                        
                         <div className="detail-card">
                             <h4>📋 Información Adicional</h4>
                             {vm.createdAt && (
@@ -265,7 +265,7 @@ const ResultModal = ({ result, onClose }) => {
                     </div>
                 </div>
 
-                {/* Footer con acciones */}
+                
                 <div className="modal-footer">
                     <button className="btn-secondary" onClick={onClose}>
                         Cerrar

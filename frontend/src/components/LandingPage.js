@@ -37,7 +37,7 @@ const LandingPage = ({ onStart }) => {
 
     return (
         <div className="landing-container">
-            {/* Fondo animado con formas */}
+            
             <div className="background-shapes">
                 <div className="shape shape-1"></div>
                 <div className="shape shape-2"></div>
@@ -50,7 +50,7 @@ const LandingPage = ({ onStart }) => {
                 initial="hidden"
                 animate="visible"
             >
-                {/* Hero Section */}
+                
                 <motion.header className="hero-section" variants={itemVariants}>
                     <motion.div
                         className="hero-icon"
@@ -70,7 +70,7 @@ const LandingPage = ({ onStart }) => {
                     </div>
                 </motion.header>
 
-                {/* Providers Section */}
+                
                 <motion.section className="providers-section" variants={itemVariants}>
                     <h2>Proveedores Soportados</h2>
                     <div className="providers-grid">
@@ -113,7 +113,7 @@ const LandingPage = ({ onStart }) => {
                     </div>
                 </motion.section>
 
-                {/* Features Section */}
+                
                 <motion.section className="features-section" variants={itemVariants}>
                     <h2>Características Principales</h2>
                     <div className="features-grid">
@@ -153,7 +153,7 @@ const LandingPage = ({ onStart }) => {
                     </div>
                 </motion.section>
 
-                {/* Patterns Section */}
+                
                 <motion.section className="patterns-section" variants={itemVariants}>
                     <h2>Patrones de Diseño Implementados</h2>
                     <div className="patterns-grid">
@@ -208,7 +208,7 @@ const LandingPage = ({ onStart }) => {
                     </div>
                 </motion.section>
 
-                {/* CTA Section */}
+                
                 <motion.section className="cta-section" variants={itemVariants}>
                     <motion.div
                         className="cta-content"
@@ -227,7 +227,7 @@ const LandingPage = ({ onStart }) => {
                     </motion.div>
                 </motion.section>
 
-                {/* Footer */}
+                
                 <motion.footer className="landing-footer" variants={itemVariants}>
                     <p>🎓 Universidad Popular del Cesar - Ingeniería de Software</p>
                     <p className="tech-stack">Desarrollado con Python Flask + React + Design Patterns</p>

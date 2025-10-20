@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class GoogleVMBuilder(VMBuilder):
-    """Builder concreto para Google Cloud con parámetros del PDF (Página 3)"""
+    
     
     def __init__(self):
         super().__init__()

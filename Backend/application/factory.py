@@ -1,8 +1,3 @@
-"""
-Application Layer - Factory Pattern
-Implementación del patrón Factory Method
-Aplicando OCP y DIP
-"""
 from typing import Dict, Any, Optional, Type
 import logging
 
@@ -18,17 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class VMProviderFactory:
-    """
-    Creator Concreto: Factory que crea proveedores según el tipo solicitado
     
-    Aplicando:
-    - Factory Method Pattern: Centraliza la creación de objetos
-    - OCP: Fácil agregar nuevos proveedores sin modificar esta clase
-    - DIP: Retorna abstracciones (ProveedorAbstracto) no implementaciones
-    - SRP: Solo se encarga de crear proveedores
-    """
     
-    # Registro de proveedores disponibles (facilita extensibilidad)
+    
     _providers = {
         'aws': AWS,
         'azure': Azure,
@@ -39,25 +26,13 @@ class VMProviderFactory:
     
     @classmethod
     def register_provider(cls, name: str, provider_class):
-        """
-        Permite registrar nuevos proveedores dinámicamente
-        Mejora la extensibilidad (OCP)
-        """
+        
         cls._providers[name.lower()] = provider_class
         logger.info(f"Proveedor registrado: {name}")
     
     @classmethod
     def create_provider(cls, provider_type: str, config: Dict[str, Any]) -> Optional[ProveedorAbstracto]:
-        """
-        Factory Method: Crea el proveedor apropiado según el tipo
         
-        Args:
-            provider_type: Tipo de proveedor (aws, azure, google, onpremise)
-            config: Configuración específica del proveedor
-            
-        Returns:
-            Instancia del proveedor o None si no existe
-        """
         provider_type = provider_type.lower().strip()
         
         provider_class = cls._providers.get(provider_type)
@@ -67,7 +42,7 @@ class VMProviderFactory:
             return None
         
         try:
-            # Crear instancia del proveedor
+            
             provider = provider_class(config)
             
             logger.info(f"Proveedor creado exitosamente: {provider_type}")
@@ -79,22 +54,17 @@ class VMProviderFactory:
     
     @classmethod
     def get_available_providers(cls) -> list:
-        """Retorna lista de proveedores disponibles"""
+        
         return list(cls._providers.keys())
 
 
 class ProviderOrchestrator:
-    """
-    Clase auxiliar para validar y obtener un proveedor.
-    Refinamiento de SRP: Su única responsabilidad es la validación y preparación del proveedor.
-    """
+    
     def __init__(self, factory: VMProviderFactory):
         self.factory = factory
 
     def get_validated_provider(self, provider_type: str, config: Dict[str, Any]) -> tuple[Optional[ProveedorAbstracto], Optional[ProvisioningResult]]:
-        """
-        Valida la solicitud y devuelve el proveedor o un resultado de error.
-        """
+        
         if not provider_type:
             error_result = ProvisioningResult(
                 success=False,
@@ -103,20 +73,20 @@ class ProviderOrchestrator:
             )
             return None, error_result
 
-        # 1. Validar el `config` usando el esquema de Pydantic correspondiente
+       
         validator = get_validator_for(provider_type)
         if validator:
             try:
-                # Pydantic parsea, valida y asigna valores por defecto
+                
                 validated_config = validator.model_validate(config)
-                # Usamos la configuración validada y enriquecida para la creación
+                
                 config = validated_config.model_dump()
             except ValidationError as e:
-                # Si la validación falla, Pydantic genera un error detallado
+                
                 error_result = ProvisioningResult(
                     success=False,
                     message="Error de validación de parámetros",
-                    error_detail=e.json(),  # Devolvemos los detalles del error en formato JSON
+                    error_detail=e.json(),  
                     provider=provider_type
                 )
                 return None, error_result
@@ -142,52 +112,36 @@ class ProviderOrchestrator:
             )
             return None, error_result
 
-        # Si todo es correcto, devuelve el proveedor y ningún error.
+        
         return provider, None
 
 
 class VMProvisioningService:
-    """
-    Application Service: Servicio de aprovisionamiento de VMs
     
-    Aplicando:
-    - SRP: Solo se encarga de orquestar el aprovisionamiento
-    - DIP: Depende de abstracciones (ProveedorAbstracto)
-    - ISP: Interfaz específica para aprovisionamiento
-    """
     
     def __init__(self):
         factory = VMProviderFactory()
         self.orchestrator = ProviderOrchestrator(factory)
 
     def provision_vm(self, provider_type: str, config: Dict[str, Any]) -> ProvisioningResult:
-        """
-        Aprovisiona una VM usando el proveedor especificado
-        
-        Args:
-            provider_type: Tipo de proveedor (aws, azure, google, onpremise)
-            config: Configuración de la VM a crear
-            
-        Returns:
-            ProvisioningResult con el resultado de la operación
-        """
+       
         try:
-            # 1. Delegar validación y obtención del proveedor
+            
             provider, error_result = self.orchestrator.get_validated_provider(provider_type, config)
 
-            # Si hubo un error de validación, retornarlo inmediatamente
+            
             if error_result:
                 return error_result
 
-            # Ayuda al analizador estático a entender que `provider` no puede ser None en este punto.
+            
             assert provider is not None
 
-            # Aprovisionar VM (RNF4 - Logging sin información sensible)
+            
             logger.info(f"Iniciando aprovisionamiento en {provider_type} con proveedor validado.")
             
             vm = provider.provisionar()
             
-            # Validar creación
+            
             if vm and vm.status == VMStatus.RUNNING:
                 logger.info(f"VM aprovisionada exitosamente - ID: {vm.vmId}")
                 
@@ -216,41 +170,26 @@ class VMProvisioningService:
             )
     
     def get_supported_providers(self) -> list:
-        """Retorna lista de proveedores soportados"""
+        
         return self.orchestrator.factory.get_available_providers()
 
 
 class VMBuilderFactory:
-    """
-    Factory para crear Builders según el proveedor
+    
 
-    Aplicando:
-    - Factory Method Pattern: Centraliza la creación de builders
-    - OCP: Fácil agregar nuevos builders sin modificar esta clase
-    - DIP: Retorna abstracciones (VMBuilder) no implementaciones
-    """
-
-    # Registro de builders disponibles
+    
     _builders = {
         'aws': AWSVMBuilder,
         'azure': AzureVMBuilder,
         'google': GoogleVMBuilder,
-        'gcp': GoogleVMBuilder,  # Alias
+        'gcp': GoogleVMBuilder,  
         'onpremise': OnPremiseVMBuilder,
-        'on-premise': OnPremiseVMBuilder  # Alias
+        'on-premise': OnPremiseVMBuilder  
     }
 
     @classmethod
     def create_builder(cls, provider_type: str) -> Optional[VMBuilder]:
-        """
-        Factory Method: Crea el builder apropiado según el tipo
-
-        Args:
-            provider_type: Tipo de proveedor (aws, azure, google, onpremise)
-
-        Returns:
-            Instancia del builder o None si no existe
-        """
+        
         provider_type = provider_type.lower().strip()
 
         builder_class = cls._builders.get(provider_type)
@@ -269,48 +208,21 @@ class VMBuilderFactory:
 
     @classmethod
     def get_available_builders(cls) -> list:
-        """Retorna lista de builders disponibles"""
+        
         return list(cls._builders.keys())
 
 
 class VMBuildingService:
-    """
-    Application Service: Servicio de construcción de VMs usando Builder Pattern
-
-    Aplicando:
-    - SRP: Solo se encarga de orquestar la construcción con builders
-    - Builder Pattern: Usa builders para construcción compleja
-    """
+    
 
     def __init__(self):
         self.builder_factory = VMBuilderFactory()
 
     def build_vm_with_config(self, provider_type: str,
                             build_config: Dict[str, Any]) -> ProvisioningResult:
-        """
-        Construye una VM usando el builder con configuración personalizada
-
-        Args:
-            provider_type: Tipo de proveedor
-            build_config: Configuración detallada para el builder
-                {
-                    "name": "my-vm",
-                    "vm_type": "standard",
-                    "cpu": 4,
-                    "ram": 16,
-                    "disk_gb": 100,
-                    "disk_type": "ssd",
-                    "location": "us-east-1",
-                    "network_id": "vpc-123",
-                    "cidr": "10.0.0.0/16",
-                    "advanced_options": {...}
-                }
-
-        Returns:
-            ProvisioningResult con el resultado de la operación
-        """
+        
         try:
-            # Crear builder
+            
             builder = self.builder_factory.create_builder(provider_type)
 
             if builder is None:
@@ -322,43 +234,43 @@ class VMBuildingService:
                     provider=provider_type
                 )
 
-            # Construir VM paso a paso
+           
             builder.reset()
 
-            # Configuración básica
+            
             if 'name' in build_config and 'vm_type' in build_config:
                 builder.set_basic_config(build_config['name'], build_config['vm_type'])
 
-            # Recursos de cómputo
+            
             if 'cpu' in build_config or 'ram' in build_config:
                 builder.set_compute_resources(
                     cpu=build_config.get('cpu'),
                     ram=build_config.get('ram')
                 )
 
-            # Almacenamiento
+            
             if 'disk_gb' in build_config:
                 builder.set_storage(
                     size_gb=build_config['disk_gb'],
                     disk_type=build_config.get('disk_type')
                 )
 
-            # Red
+            
             if 'network_id' in build_config or 'cidr' in build_config:
                 builder.set_network(
                     network_id=build_config.get('network_id'),
                     cidr=build_config.get('cidr')
                 )
 
-            # Ubicación
+            
             if 'location' in build_config:
                 builder.set_location(build_config['location'])
 
-            # Opciones avanzadas
+            
             if 'advanced_options' in build_config:
                 builder.set_advanced_options(build_config['advanced_options'])
 
-            # Construir
+            
             vm = builder.build()
 
             logger.info(f"VM construida exitosamente con Builder - ID: {vm.vmId}")
@@ -384,20 +296,9 @@ class VMBuildingService:
                            preset: str,
                            name: str,
                            location: str = "us-east-1") -> ProvisioningResult:
-        """
-        Construye una VM usando configuraciones predefinidas a través del Director
-
-        Args:
-            provider_type: Tipo de proveedor
-            preset: Tipo de VM predefinida (minimal, standard, high-performance)
-            name: Nombre de la VM
-            location: Ubicación de despliegue
-
-        Returns:
-            ProvisioningResult con el resultado de la operación
-        """
+        
         try:
-            # Crear builder
+            
             builder = self.builder_factory.create_builder(provider_type)
 
             if builder is None:
@@ -407,10 +308,10 @@ class VMBuildingService:
                     provider=provider_type
                 )
 
-            # Crear director
+            
             director = VMDirector(builder)
 
-            # Construir según preset
+            
             if preset == 'minimal':
                 vm = director.build_minimal_vm(name)
             elif preset == 'standard':
@@ -446,24 +347,9 @@ class VMBuildingService:
         
     def build_vm_type(self, provider_type: str, vm_type: str,
                       name: str, location: str, size: str = 'medium') -> ProvisioningResult:
-        """
-        Construye una VM de uno de los 3 tipos especificados en el PDF usando Director
         
-        Args:
-            provider_type: Tipo de proveedor (aws, azure, google, onpremise)
-            vm_type: Tipo de VM según PDF
-                     - 'standard': Standard VM (General Purpose)
-                     - 'memory-optimized': VM Optimizada en Memoria
-                     - 'disk-optimized': VM Optimizada en Disco
-            name: Nombre de la VM
-            location: Región/ubicación
-            size: Tamaño de la VM (small, medium, large)
-        
-        Returns:
-            ProvisioningResult con el resultado de la operación
-        """
         try:
-            # Crear builder
+            
             builder = self.builder_factory.create_builder(provider_type)
 
             if builder is None:
@@ -475,11 +361,11 @@ class VMBuildingService:
                     provider=provider_type
                 )
 
-            # Crear director
+            
             from domain.builder import VMDirector
             director = VMDirector(builder)
 
-            # Construir según el tipo de VM del PDF
+            
             if vm_type == 'standard':
                 vm = director.build_standard_vm(name, location, size)
                 type_description = "Standard VM (General Purpose)"
@@ -510,7 +396,7 @@ class VMBuildingService:
             )
 
         except ValueError as ve:
-            # Captura errores de validación de región
+            
             logger.error(f"Error de validación: {str(ve)}")
             return ProvisioningResult(
                 success=False,

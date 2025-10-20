@@ -147,7 +147,7 @@ const BuildForm = ({ providers, onResult }) => {
             </motion.div>
 
             <form onSubmit={handleSubmit}>
-                {/* Configuración Principal */}
+                
                 <motion.fieldset variants={itemVariants}>
                     <legend>📋 Configuración Principal</legend>
                     <div className="form-grid-layout">
@@ -171,7 +171,7 @@ const BuildForm = ({ providers, onResult }) => {
                     </div>
                 </motion.fieldset>
 
-                {/* Tipo de Instancia */}
+                
                 <motion.fieldset variants={itemVariants}>
                     <legend><FaMicrochip /> Tipo de Instancia</legend>
                     <div className="selection-cards">
@@ -222,7 +222,7 @@ const BuildForm = ({ providers, onResult }) => {
                     </AnimatePresence>
                 </motion.fieldset>
 
-                {/* Almacenamiento */}
+                
                 <motion.fieldset variants={itemVariants}>
                     <legend><FaHdd /> Almacenamiento</legend>
                     <div className="form-grid-layout">
@@ -241,7 +241,7 @@ const BuildForm = ({ providers, onResult }) => {
                     </div>
                 </motion.fieldset>
 
-                {/* Opciones Avanzadas */}
+                
                 <motion.div variants={itemVariants}>
                     <div
                         className="collapsible-header"

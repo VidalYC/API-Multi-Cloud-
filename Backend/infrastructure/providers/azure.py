@@ -22,7 +22,7 @@ class Azure(ProveedorAbstracto):
         vm_id = f"azure-{uuid.uuid4()}"
         logger.info(f"Creando VM en Azure - ID: {vm_id}, Tamaño: {self.size}, Grupo: {self.resource_group}")
         
-        # Mapeo de vCPU y memoria según size
+        
         vcpu_ram_map = {
             'Standard_B1s': (1, 1),
             'Standard_B2s': (2, 4),
@@ -55,7 +55,7 @@ class Azure(ProveedorAbstracto):
             name=vnet_name,
             cidr_block="10.1.0.0/16",
             provider="azure",
-            region=self.location,  # ✅ OBLIGATORIO
+            region=self.location,  
             firewallRules=self.config.get('firewallRules'),
             publicIP=self.config.get('publicIP')
         )
@@ -72,6 +72,6 @@ class Azure(ProveedorAbstracto):
             size_gb=size_gb,
             disk_type=disk_sku,
             provider="azure",
-            region=self.location,  # ✅ OBLIGATORIO
+            region=self.location,  
             iops=self.config.get('iops')
         )

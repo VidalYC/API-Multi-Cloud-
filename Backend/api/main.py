@@ -1,12 +1,7 @@
-"""
-API Layer - REST API Implementation
-Implementación de la API REST usando Flask
-Aplicando RNF4 (Stateless), RNF5 (JSON), RF1-RF5
-"""
 import sys
 import os
 
-# Agregar el directorio raíz al path para importaciones
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import Flask, request, jsonify
@@ -17,18 +12,18 @@ from typing import Dict, Any
 from application.factory import VMProvisioningService, VMBuildingService
 from application.clone_service import VMCloneService
 
-# Configuración de logging
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Crear aplicación Flask
-app = Flask(__name__)
-CORS(app)  # Habilitar CORS
 
-# Services (DIP: Inyección de dependencia)
+app = Flask(__name__)
+CORS(app)  
+
+
 provisioning_service = VMProvisioningService()
 building_service = VMBuildingService()
 clone_service = VMCloneService()
@@ -36,9 +31,7 @@ clone_service = VMCloneService()
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """
-    Endpoint de health check
-    """
+    
     return jsonify({
         'status': 'healthy',
         'service': 'VM Provisioning API',
@@ -48,12 +41,7 @@ def health_check():
 
 @app.route('/api/providers', methods=['GET'])
 def get_providers():
-    """
-    RF5: Endpoint para listar proveedores disponibles
     
-    Returns:
-        JSON con lista de proveedores soportados
-    """
     try:
         providers = provisioning_service.get_supported_providers()
         
@@ -73,12 +61,7 @@ def get_providers():
 
 @app.route('/api/vm/types', methods=['GET'])
 def get_vm_types():
-    """
-    Endpoint para listar los 3 tipos de VM disponibles según el PDF
     
-    Returns:
-        JSON con los tipos de VM y sus características
-    """
     try:
         vm_types = {
             'standard': {
@@ -138,37 +121,19 @@ def get_vm_types():
 
 @app.route('/api/vm/provision', methods=['POST'])
 def provision_vm():
-    """
-    RF1: Endpoint principal para aprovisionar VMs
-    RF2: Invoca la lógica correspondiente según el proveedor
-    RF3: Devuelve estado del aprovisionamiento
-    RF4: Registra logs (sin información sensible)
     
-    Request Body (JSON):
-    {
-        "provider": "aws|azure|google|onpremise",
-        "config": {
-            "type": "instance_type",
-            "region": "us-east-1",
-            ... (parámetros específicos del proveedor)
-        }
-    }
-    
-    Returns:
-        JSON con resultado del aprovisionamiento
-    """
     try:
-        # RNF5: Validar que el request es JSON
+        
         if not request.is_json:
             return jsonify({
                 'success': False,
                 'error': 'Content-Type debe ser application/json'
             }), 400
         
-        # Obtener datos del request
+        
         data: Dict[str, Any] = request.get_json()
         
-        # Validar parámetros requeridos
+        
         if 'provider' not in data:
             return jsonify({
                 'success': False,
@@ -185,16 +150,16 @@ def provision_vm():
         provider = str(data.get('provider', ''))
         config = data.get('config', {})
         
-        # RNF3: Log sin información sensible
+        
         logger.info(f"Solicitud de aprovisionamiento - Proveedor: {provider}")
         
-        # Llamar al servicio de aprovisionamiento
+        
         result = provisioning_service.provision_vm(provider, config)
         
-        # RF3: Preparar respuesta con estado
+        
         response = result.to_dict()
         
-        # Determinar código de estado HTTP
+        
         status_code = 200 if result.success else 400
         
         return jsonify(response), status_code
@@ -210,19 +175,7 @@ def provision_vm():
 
 @app.route('/api/vm/provision/<provider>', methods=['POST'])
 def provision_vm_by_provider(provider: str):
-    """
-    RF1: Endpoint alternativo con proveedor en la URL
     
-    Ejemplo: POST /api/vm/provision/aws
-    
-    Request Body (JSON):
-    {
-        "config": {
-            "type": "t2.micro",
-            "region": "us-east-1"
-        }
-    }
-    """
     try:
         if not request.is_json:
             return jsonify({
@@ -251,32 +204,7 @@ def provision_vm_by_provider(provider: str):
 
 @app.route('/api/vm/build', methods=['POST'])
 def build_vm():
-    """
-    Endpoint para construir VMs usando Builder Pattern con configuración detallada
-
-    Request Body (JSON):
-    {
-        "provider": "aws|azure|google|onpremise",
-        "build_config": {
-            "name": "my-vm",
-            "vm_type": "standard",
-            "cpu": 4,
-            "ram": 16,
-            "disk_gb": 100,
-            "disk_type": "ssd",
-            "location": "us-east-1",
-            "network_id": "vpc-123",
-            "cidr": "10.0.0.0/16",
-            "advanced_options": {
-                "monitoring": true,
-                "optimized": true
-            }
-        }
-    }
-
-    Returns:
-        JSON con resultado de la construcción
-    """
+    
     try:
         if not request.is_json:
             return jsonify({
@@ -286,7 +214,7 @@ def build_vm():
 
         data: Dict[str, Any] = request.get_json()
 
-        # Validar parámetros requeridos
+        
         if 'provider' not in data:
             return jsonify({
                 'success': False,
@@ -315,7 +243,7 @@ def build_vm():
 
         logger.info(f"Solicitud de construcción (Builder) - Proveedor: {provider}")
 
-        # Llamar al servicio de construcción
+        
         result = building_service.build_vm_with_config(provider, build_config)
 
         response = result.to_dict()
@@ -334,20 +262,7 @@ def build_vm():
 
 @app.route('/api/vm/build/preset', methods=['POST'])
 def build_vm_preset():
-    """
-    Endpoint para construir VMs usando configuraciones predefinidas (Director)
-
-    Request Body (JSON):
-    {
-        "provider": "aws|azure|google|onpremise",
-        "preset": "minimal|standard|high-performance",
-        "name": "my-vm",
-        "location": "us-east-1"
-    }
-
-    Returns:
-        JSON con resultado de la construcción
-    """
+    
     try:
         if not request.is_json:
             return jsonify({
@@ -357,7 +272,7 @@ def build_vm_preset():
 
         data: Dict[str, Any] = request.get_json()
 
-        # Validar parámetros requeridos
+        
         required_params = ['provider', 'preset', 'name']
         for param in required_params:
             if param not in data:
@@ -379,7 +294,7 @@ def build_vm_preset():
 
         logger.info(f"Solicitud de construcción predefinida - Proveedor: {provider}, Preset: {preset}")
 
-        # Llamar al servicio de construcción predefinida
+        
         result = building_service.build_predefined_vm(provider, preset, name, location)
 
         response = result.to_dict()
@@ -398,17 +313,7 @@ def build_vm_preset():
 
 @app.route('/api/vm/build/standard', methods=['POST'])
 def build_standard_vm():
-    """
-    Endpoint para construir Standard VM según PDF (Tipo 1)
     
-    Request Body (JSON):
-    {
-        "provider": "aws|azure|google|onpremise",
-        "name": "my-standard-vm",
-        "location": "us-east-1",
-        "size": "small|medium|large"  (opcional, default: medium)
-    }
-    """
     try:
         if not request.is_json:
             return jsonify({
@@ -418,7 +323,7 @@ def build_standard_vm():
 
         data: Dict[str, Any] = request.get_json()
 
-        # Validar parámetros requeridos
+        
         required_params = ['provider', 'name', 'location']
         for param in required_params:
             if param not in data:
@@ -440,7 +345,7 @@ def build_standard_vm():
 
         logger.info(f"Solicitud Standard VM - Proveedor: {provider}, Nombre: {name}")
 
-        # Construir Standard VM usando Director
+        
         result = building_service.build_vm_type(provider, 'standard', name, location, size)
 
         response = result.to_dict()
@@ -459,17 +364,7 @@ def build_standard_vm():
 
 @app.route('/api/vm/build/memory-optimized', methods=['POST'])
 def build_memory_optimized_vm():
-    """
-    Endpoint para construir VM Optimizada en Memoria según PDF (Tipo 2)
     
-    Request Body (JSON):
-    {
-        "provider": "aws|azure|google|onpremise",
-        "name": "database-server",
-        "location": "us-east-1",
-        "size": "small|medium|large"  (opcional, default: medium)
-    }
-    """
     try:
         if not request.is_json:
             return jsonify({
@@ -512,17 +407,7 @@ def build_memory_optimized_vm():
 
 @app.route('/api/vm/build/disk-optimized', methods=['POST'])
 def build_disk_optimized_vm():
-    """
-    Endpoint para construir VM Optimizada en Disco según PDF (Tipo 3)
     
-    Request Body (JSON):
-    {
-        "provider": "aws|azure|google|onpremise",
-        "name": "compute-server",
-        "location": "us-east-1",
-        "size": "small|medium|large"  (opcional, default: medium)
-    }
-    """
     try:
         if not request.is_json:
             return jsonify({
@@ -565,23 +450,7 @@ def build_disk_optimized_vm():
 
 @app.route('/api/vm/clone', methods=['POST'])
 def clone_vm():
-    """
-    Endpoint para clonar VMs usando el Patrón Prototype
-
-    Request Body (JSON):
-    {
-        "prototype_name": "aws-web-server",
-        "new_vm_name": "web-server-production",
-        "customizations": {
-            "vcpus": 4,
-            "memoryGB": 8,
-            "region": "us-west-2"
-        }
-    }
-
-    Returns:
-        JSON con resultado de la clonación
-    """
+    
     try:
         if not request.is_json:
             return jsonify({
@@ -591,7 +460,7 @@ def clone_vm():
 
         data: Dict[str, Any] = request.get_json()
 
-        # Validar parámetros requeridos
+        
         if 'prototype_name' not in data:
             return jsonify({
                 'success': False,
@@ -618,7 +487,7 @@ def clone_vm():
 
         logger.info(f"Solicitud de clonación - Prototipo: {prototype_name}, Nuevo nombre: {new_vm_name}")
 
-        # Llamar al servicio de clonación
+        
         result = clone_service.clone_from_prototype(
             prototype_name=prototype_name,
             new_vm_name=new_vm_name,
@@ -641,12 +510,7 @@ def clone_vm():
 
 @app.route('/api/prototypes', methods=['GET'])
 def list_prototypes():
-    """
-    Endpoint para listar prototipos disponibles
-
-    Returns:
-        JSON con lista de prototipos y sus detalles
-    """
+    
     try:
         result = clone_service.list_available_prototypes()
         return jsonify(result), 200
@@ -662,15 +526,7 @@ def list_prototypes():
 
 @app.route('/api/prototypes/<name>', methods=['GET'])
 def get_prototype_details(name: str):
-    """
-    Endpoint para obtener detalles de un prototipo específico
-
-    Args:
-        name: Nombre del prototipo
-
-    Returns:
-        JSON con detalles del prototipo
-    """
+    
     try:
         result = clone_service.get_prototype_details(name)
         status_code = 200 if result.get('success', False) else 404
@@ -687,7 +543,7 @@ def get_prototype_details(name: str):
 
 @app.errorhandler(404)
 def not_found(error):
-    """Manejador de rutas no encontradas"""
+    
     return jsonify({
         'success': False,
         'error': 'Endpoint no encontrado',
@@ -711,7 +567,7 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-    """Manejador de errores internos"""
+    
     logger.error(f"Error 500: {str(error)}")
     return jsonify({
         'success': False,
@@ -720,9 +576,9 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
-    # RNF4: API Stateless para escalabilidad
+    
     logger.info("Iniciando VM Provisioning API...")
     logger.info(f"Proveedores disponibles: {provisioning_service.get_supported_providers()}")
     
-    # Modo debug solo para desarrollo
+    
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -97,7 +97,7 @@ const PresetForm = ({ providers, onResult }) => {
             </motion.div>
 
             <form onSubmit={handleSubmit}>
-                {/* Selección de Plantilla */}
+                
                 <motion.div variants={itemVariants}>
                     <h3 style={{ marginBottom: '1.5rem', color: '#495057' }}>
                         🎯 Selecciona una Plantilla
@@ -139,7 +139,7 @@ const PresetForm = ({ providers, onResult }) => {
                     </div>
                 </motion.div>
 
-                {/* Información de la plantilla seleccionada */}
+                
                 {selectedPreset && (
                     <motion.div
                         className="inline-alert info"
@@ -157,7 +157,7 @@ const PresetForm = ({ providers, onResult }) => {
                     </motion.div>
                 )}
 
-                {/* Configuración */}
+                
                 <motion.fieldset variants={itemVariants}>
                     <legend>⚙️ Configuración</legend>
                     <div className="form-grid-layout">
@@ -205,7 +205,7 @@ const PresetForm = ({ providers, onResult }) => {
                     </div>
                 </motion.fieldset>
 
-                {/* Resumen */}
+                
                 <motion.div
                     className="preset-summary"
                     variants={itemVariants}

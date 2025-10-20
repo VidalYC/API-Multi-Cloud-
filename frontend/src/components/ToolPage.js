@@ -71,7 +71,7 @@ const ToolPage = ({ onBackToHome }) => {
 
     return (
         <div className="tool-page">
-            {/* Header con gradiente */}
+            
             <motion.header
                 className="tool-header"
                 initial={{ y: -100, opacity: 0 }}
@@ -92,9 +92,9 @@ const ToolPage = ({ onBackToHome }) => {
                 </div>
             </motion.header>
 
-            {/* Contenedor principal */}
+            
             <div className="tool-container">
-                {/* Tabs mejoradas */}
+                
                 <motion.div
                     className="tabs-enhanced"
                     initial={{ opacity: 0, y: 20 }}
@@ -128,7 +128,7 @@ const ToolPage = ({ onBackToHome }) => {
                     ))}
                 </motion.div>
 
-                {/* Área de contenido con animación */}
+                
                 <AnimatePresence mode="wait">
                     <motion.main
                         key={activeTab}
@@ -162,7 +162,7 @@ const ToolPage = ({ onBackToHome }) => {
                 </AnimatePresence>
             </div>
 
-            {/* Modal de resultados */}
+            
             <AnimatePresence>
                 {showModal && (
                     <ResultModal

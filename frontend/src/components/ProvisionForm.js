@@ -77,7 +77,7 @@ const ProvisionForm = ({ providers, onResult }) => {
 
             <form onSubmit={handleSubmit}>
                 <motion.div className="form-grid-layout" variants={itemVariants}>
-                    {/* Proveedor */}
+                    
                     <div className="form-field-modern">
                         <label htmlFor="provider">
                             <FaCloud /> Proveedor de Nube
@@ -100,7 +100,7 @@ const ProvisionForm = ({ providers, onResult }) => {
                         <span className="field-hint">Selecciona el proveedor cloud</span>
                     </div>
 
-                    {/* Tipo de VM */}
+                    
                     <div className="form-field-modern">
                         <label htmlFor="vmType">
                             💻 Tipo de Instancia
@@ -119,7 +119,7 @@ const ProvisionForm = ({ providers, onResult }) => {
                         <span className="field-hint">Tipo de instancia del proveedor</span>
                     </div>
 
-                    {/* Región */}
+                    
                     <div className="form-field-modern full-width">
                         <label htmlFor="region">
                             <FaMapMarkerAlt /> Región / Ubicación

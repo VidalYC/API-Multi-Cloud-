@@ -25,7 +25,7 @@
     position: relative;
 }
 
-/* Header del Modal */
+
 .modal-header {
     padding: 2.5rem;
     border-radius: 25px 25px 0 0;
@@ -91,12 +91,12 @@
     transform: rotate(90deg);
 }
 
-/* Body del Modal */
+
 .modal-body {
     padding: 2.5rem;
 }
 
-/* VM Header Card */
+
 .vm-header-card {
     display: flex;
     align-items: center;
@@ -206,7 +206,7 @@
     }
 }
 
-/* Details Grid */
+
 .details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -279,7 +279,7 @@
     font-size: 0.85rem;
 }
 
-/* Error Styles */
+
 .error-details {
     display: flex;
     flex-direction: column;
@@ -351,7 +351,7 @@
     line-height: 1.6;
 }
 
-/* Footer del Modal */
+
 .modal-footer {
     padding: 1.5rem 2.5rem;
     background: #f8f9fa;
@@ -398,7 +398,7 @@
     border-color: #6c757d;
 }
 
-/* Scrollbar personalizada para el modal */
+
 .modal-content::-webkit-scrollbar {
     width: 8px;
 }
@@ -417,7 +417,7 @@
     background: linear-gradient(135deg, #0f8af5, #00f2fe);
 }
 
-/* Responsive */
+
 @media (max-width: 1024px) {
     .details-grid {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

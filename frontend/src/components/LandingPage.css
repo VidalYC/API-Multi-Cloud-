@@ -6,7 +6,7 @@
     color: white;
 }
 
-/* Formas animadas de fondo */
+
 .background-shapes {
     position: absolute;
     top: 0;
@@ -57,7 +57,7 @@
     }
 }
 
-/* Contenido principal */
+
 .landing-content {
     position: relative;
     z-index: 1;
@@ -66,7 +66,7 @@
     padding: 2rem;
 }
 
-/* Hero Section */
+
 .hero-section {
     text-align: center;
     padding: 4rem 0;
@@ -132,7 +132,7 @@
     transform: translateY(-2px);
 }
 
-/* Providers Section */
+
 .providers-section {
     padding: 4rem 0;
     text-align: center;
@@ -190,7 +190,7 @@
     font-size: 0.95rem;
 }
 
-/* Features Section */
+
 .features-section {
     text-align: center;
     padding: 4rem 0;
@@ -240,7 +240,7 @@
     line-height: 1.6;
 }
 
-/* Patterns Section */
+
 .patterns-section {
     text-align: center;
     padding: 4rem 0;
@@ -313,7 +313,7 @@
     font-weight: 500;
 }
 
-/* SOLID Section */
+
 .solid-section {
     text-align: center;
     padding: 4rem 0;
@@ -378,7 +378,7 @@
     margin: 0;
 }
 
-/* CTA Section */
+
 .cta-section {
     padding: 6rem 0;
     text-align: center;
@@ -422,7 +422,7 @@
     background: #002f3d;
 }
 
-/* Footer */
+
 .landing-footer {
     padding: 3rem 0;
     text-align: center;
@@ -440,7 +440,7 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Responsive Design */
+
 @media (max-width: 1024px) {
     .hero-section h1 {
         font-size: 2.8rem;
@@ -498,15 +498,15 @@
     }
 }
 
-/* Ocultar la barra de desplazamiento en toda la página (incluyendo modales) pero mantener la funcionalidad */
+
 * {
-    /* Para Firefox */
+    
     scrollbar-width: none;
-    /* Para Internet Explorer y Edge */
+    
     -ms-overflow-style: none;
 }
 
-/* Para navegadores Webkit (Chrome, Safari, Opera, Brave) */
+
 *::-webkit-scrollbar {
     display: none;
 }

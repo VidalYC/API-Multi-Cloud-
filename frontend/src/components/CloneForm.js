@@ -12,12 +12,12 @@ const CloneForm = ({ onSubmit }) => {
   const [showCustomizations, setShowCustomizations] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Customizations
+ 
   const [customVcpus, setCustomVcpus] = useState('');
   const [customMemory, setCustomMemory] = useState('');
   const [customRegion, setCustomRegion] = useState('');
 
-  // Fetch available prototypes on mount
+  
   useEffect(() => {
     fetchPrototypesData();
   }, []);
@@ -42,7 +42,7 @@ const CloneForm = ({ onSubmit }) => {
         const data = await getPrototypeDetails(name);
         if (data.success) {
           setSelectedPrototype(data.prototype);
-          // Set default customization values
+          
           setCustomVcpus(data.prototype.vcpus.toString());
           setCustomMemory(data.prototype.memoryGB.toString());
           setCustomRegion(data.prototype.network?.region || '');
@@ -83,7 +83,7 @@ const CloneForm = ({ onSubmit }) => {
       const result = await cloneVm(payload);
       onSubmit(result);
 
-      // Reset form on success
+      
       if (result.success) {
         setPrototypeName('');
         setNewVmName('');
@@ -127,7 +127,7 @@ const CloneForm = ({ onSubmit }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="clone-form">
-        {/* Prototype Selection */}
+        
         <div className="form-group">
           <label htmlFor="prototype">
             Prototipo <span className="required">*</span>
@@ -152,7 +152,7 @@ const CloneForm = ({ onSubmit }) => {
           </small>
         </div>
 
-        {/* Show prototype details when selected */}
+        
         {selectedPrototype && (
           <motion.div
             className="prototype-details-card"
@@ -196,7 +196,7 @@ const CloneForm = ({ onSubmit }) => {
           </motion.div>
         )}
 
-        {/* VM Name */}
+        
         <div className="form-group">
           <label htmlFor="vmName">
             Nombre de la Nueva VM <span className="required">*</span>
@@ -216,7 +216,7 @@ const CloneForm = ({ onSubmit }) => {
           </small>
         </div>
 
-        {/* Customizations Toggle */}
+        
         {selectedPrototype && (
           <div className="customizations-toggle">
             <label className="toggle-label">
@@ -231,7 +231,7 @@ const CloneForm = ({ onSubmit }) => {
           </div>
         )}
 
-        {/* Customizations Section */}
+        
         {showCustomizations && selectedPrototype && (
           <motion.div
             className="customizations-section"
@@ -288,7 +288,7 @@ const CloneForm = ({ onSubmit }) => {
           </motion.div>
         )}
 
-        {/* Submit Button */}
+        
         <motion.button
           type="submit"
           className="submit-button"
@@ -309,7 +309,7 @@ const CloneForm = ({ onSubmit }) => {
         </motion.button>
       </form>
 
-      {/* Info Box */}
+      
       <div className="info-box">
         <FaInfoCircle className="info-icon" />
         <div className="info-content">
