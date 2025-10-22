@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import './App.css';
-import LandingPage from './components/LandingPage';
-import ToolPage from './components/ToolPage';
+import './styles/App.css';  // ← CAMBIADO
+import LandingPage from './components/landing/LandingPage';
+import ToolPage from './components/tools/ToolPage';
 
 function App() {
-    const [showTool, setShowTool] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
 
-    return (
-        <div className="App">
-            {!showTool ? (
-                <LandingPage onStart={() => setShowTool(true)} />
-            ) : (
-                <ToolPage onBackToHome={() => setShowTool(false)} />
-            )}
-        </div>
-    );
+  return (
+    <div className="App">
+      {showLanding ? (
+        <LandingPage onStart={() => setShowLanding(false)} />
+      ) : (
+        <ToolPage onBackToHome={() => setShowLanding(true)} />
+      )}
+    </div>
+  );
 }
 
 export default App;
