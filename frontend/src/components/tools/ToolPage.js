@@ -7,7 +7,7 @@ import BuildForm from '../builder/BuildForm';
 import PresetForm from '../builder/PresetForm';
 import CloneForm from '../clone/CloneForm';
 import ResultModal from '../provisioning/ResultModal';
-import './ToolPage.css';
+import './ToolPage.css';    
 
 const ToolPage = ({ onBackToHome }) => {
     const [activeTab, setActiveTab] = useState('quick');
