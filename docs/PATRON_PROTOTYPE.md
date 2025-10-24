@@ -1231,7 +1231,7 @@ El patrón Prototype eleva el sistema de aprovisionamiento multi-cloud a un nive
 
 ---
 
-**Documento elaborado por**: Sistema de Aprovisionamiento Multi-Cloud
+**Documento elaborado por**: Grupo de Patrones
 **Fecha**: Octubre 2025
 **Versión**: 1.0
 **Estado**: Producción
