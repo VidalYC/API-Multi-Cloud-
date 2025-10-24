@@ -1772,7 +1772,7 @@ Usuario  API  VMBuildingService  VMBuilderFactory  VMDirector  GoogleVMBuilder  
 
 ## 📚 CONCLUSIÓN
 
-Este documento complementa **[SUSTENTACION_COMPLETA.md](SUSTENTACION_COMPLETA.md)** proporcionando:
+Este documento complementa proporciona:
 
 ✅ **Explicaciones detalladas** de Factory Method y Abstract Factory
 ✅ **Diagramas UML completos** de clases
@@ -1781,16 +1781,8 @@ Este documento complementa **[SUSTENTACION_COMPLETA.md](SUSTENTACION_COMPLETA.md
 ✅ **Comparaciones** entre patrones
 ✅ **Árboles de decisión** para elegir patrón apropiado
 
-### 📖 Documentos del Proyecto
-
-1. **[README.md](README.md)** - Documentación general y uso
-2. **[SUSTENTACION_COMPLETA.md](SUSTENTACION_COMPLETA.md)** - Cumplimiento de requisitos, pruebas, sustentación
-3. **[PATRONES_Y_UML.md](PATRONES_Y_UML.md)** - Este documento: Patrones y diagramas UML
-4. **[IMPLEMENTACION_BUILDER.md](IMPLEMENTACION_BUILDER.md)** - Detalles de implementación
-5. **[QUICKSTART.md](QUICKSTART.md)** - Guía rápida de inicio
-
 ---
 
-**Creado por:** Sistema de Documentación Técnica
+**Creado por:** Grupo de Patrones
 **Fecha:** 2025
-**Universidad Popular del Cesar** - Especialización en Ingeniería de Software
+**Universidad Popular del Cesar** - Ingenieria en Sistemas
