@@ -2,7 +2,7 @@
 
 ## 📋 Resumen de la Escalabilidad Implementada
 
-Tu proyecto ha sido escalado exitosamente implementando el **Patrón Builder** junto con el **Patrón Director**, complementando el **Factory Pattern** existente.
+El proyecto ha sido escalado exitosamente implementando el **Patrón Builder** junto con el **Patrón Director**, complementando el **Factory Pattern** existente.
 
 ---
 
