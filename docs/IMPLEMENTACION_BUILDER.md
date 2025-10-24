@@ -395,7 +395,7 @@ python test_examples.py
 
 ## ✨ Conclusión
 
-Tu proyecto ha sido **exitosamente escalado** con el patrón Builder, cumpliendo todos los requisitos del PDF WS3-Builder. Ahora tienes:
+El proyecto ha sido **exitosamente escalado** con el patrón Builder, cumpliendo todos los requisitos. Ahora tenemos:
 
 1. ✅ **Dos patrones creacionales** trabajando en armonía
 2. ✅ **Flexibilidad total** para crear VMs (Factory para rapidez, Builder para personalización)
@@ -404,4 +404,4 @@ Tu proyecto ha sido **exitosamente escalado** con el patrón Builder, cumpliendo
 5. ✅ **Documentación completa** con ejemplos
 6. ✅ **API REST** profesional con 6 endpoints
 
-**El proyecto está listo para presentación y demostración.** 🎉
+**El proyecto está listo.** 🎉
