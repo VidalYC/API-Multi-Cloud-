@@ -58,28 +58,112 @@ API-Proveedores/
 
 ## 🚀 Instalación
 
-### Requisitos
+### Opción 1: Docker (Recomendado) 🐳
 
-- Python 3.8+
-- pip
+#### Requisitos
+- Docker Desktop
+- Docker Compose
 
-### Pasos
+#### Despliegue Rápido
 
 ```bash
 # Clonar el repositorio
 cd API-Proveedores
+
+# Construir y ejecutar con Docker Compose
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Detener servicios
+docker-compose down
+```
+
+**URLs de acceso:**
+- Frontend: http://localhost
+- Backend API: http://localhost:5000
+- Health Check: http://localhost:5000/health
+
+#### Usando Imágenes de Docker Hub
+
+Las imágenes están disponibles públicamente en Docker Hub:
+
+```bash
+# Descargar imágenes
+docker pull yoriel/api-proveedores-backend:latest
+docker pull yoriel/api-proveedores-frontend:latest
+
+# Ejecutar backend
+docker run -d -p 5000:5000 --name backend yoriel/api-proveedores-backend:latest
+
+# Ejecutar frontend
+docker run -d -p 80:80 --name frontend yoriel/api-proveedores-frontend:latest
+```
+
+**Repositorios Docker Hub:**
+- Backend: https://hub.docker.com/r/yoriel/api-proveedores-backend
+- Frontend: https://hub.docker.com/r/yoriel/api-proveedores-frontend
+
+#### Arquitectura Docker
+
+El proyecto incluye:
+- **Backend Dockerfile**: Python 3.11-slim con Flask
+- **Frontend Dockerfile**: Multi-stage build (Node.js + Nginx)
+- **docker-compose.yml**: Orquestación de servicios
+- **nginx.conf**: Proxy reverso para comunicación backend-frontend
+- **Health checks**: Monitoreo automático de contenedores
+- **Networking**: Red interna para comunicación entre servicios
+
+### Opción 2: Instalación Local
+
+#### Requisitos
+- Python 3.8+
+- pip
+- Node.js 18+ (para frontend)
+
+#### Backend
+
+```bash
+# Ir al directorio del backend
+cd Backend
 
 # Instalar dependencias
 pip install -r requirements.txt
 
 # O usar setup.py
 pip install -e .
+
+# Ejecutar servidor
+python api/main.py
+```
+
+#### Frontend
+
+```bash
+# Ir al directorio del frontend
+cd frontend
+
+# Instalar dependencias
+npm install
+
+# Modo desarrollo
+npm start
+
+# Construir para producción
+npm run build
 ```
 
 ## 📚 Uso de la API
 
 ### Iniciar el servidor
 
+**Con Docker:**
+```bash
+docker-compose up -d
+```
+
+**Sin Docker:**
 ```bash
 python api/main.py
 ```
@@ -502,6 +586,167 @@ VMProviderFactory.register_provider('digitalocean', DigitalOcean)
 
 - Universidad Popular del Cesar
 - Curso: Patrones de Diseño
+
+---
+
+## 🐳 Información Detallada de Docker
+
+### Estructura de Dockerización
+
+```
+API-Proveedores/
+├── Backend/
+│   ├── Dockerfile              # Imagen del backend Flask
+│   └── .dockerignore          # Archivos excluidos del build
+├── frontend/
+│   ├── Dockerfile              # Multi-stage build React + Nginx
+│   ├── nginx.conf             # Configuración proxy reverso
+│   └── .dockerignore          # Archivos excluidos del build
+└── docker-compose.yml          # Orquestación de servicios
+```
+
+### Características de las Imágenes
+
+#### Backend (233MB)
+- **Base**: `python:3.11-slim`
+- **Puerto expuesto**: 5000
+- **Características**:
+  - Instalación automática de dependencias desde `requirements.txt`
+  - Instalación del paquete local con `setup.py`
+  - Health check en `/health`
+  - Variables de entorno configurables
+  - Reinicio automático (`restart: unless-stopped`)
+
+#### Frontend (84.2MB)
+- **Build Stage**: `node:18-alpine`
+- **Production Stage**: `nginx:alpine`
+- **Puerto expuesto**: 80
+- **Características**:
+  - Build optimizado de React
+  - Compresión gzip habilitada
+  - Cache de assets estáticos
+  - Proxy reverso al backend
+  - Soporte para SPA (Single Page Application)
+
+### Docker Compose
+
+El archivo `docker-compose.yml` orquesta ambos servicios:
+
+```yaml
+services:
+  backend:
+    - Puerto: 5000:5000
+    - Health check activo
+    - Red: api-network
+
+  frontend:
+    - Puerto: 80:80
+    - Depende del backend
+    - Nginx con proxy reverso
+    - Red: api-network
+```
+
+**Red interna**: `api-network` permite comunicación entre servicios
+
+### Comandos Útiles Docker
+
+```bash
+# Ver logs en tiempo real
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Reiniciar servicios
+docker-compose restart
+
+# Ver estado de contenedores
+docker-compose ps
+
+# Reconstruir imágenes
+docker-compose build --no-cache
+
+# Ejecutar comandos dentro del contenedor
+docker-compose exec backend python -c "print('Hello')"
+
+# Ver uso de recursos
+docker stats
+
+# Limpiar recursos
+docker-compose down -v
+docker system prune -a
+```
+
+### Variables de Entorno
+
+**Backend:**
+- `FLASK_APP`: api.main:app
+- `FLASK_RUN_PORT`: 5000
+- `PYTHONUNBUFFERED`: 1
+
+**Frontend:**
+- Configuradas en build time
+- API_URL configurado en nginx.conf
+
+### Troubleshooting Docker
+
+**Problema: Contenedores no inician**
+```bash
+# Ver logs detallados
+docker-compose logs
+
+# Verificar estado
+docker-compose ps
+```
+
+**Problema: Puerto en uso**
+```bash
+# Cambiar puertos en docker-compose.yml
+ports:
+  - "8080:5000"  # Backend en 8080
+  - "8000:80"    # Frontend en 8000
+```
+
+**Problema: Imágenes desactualizadas**
+```bash
+# Reconstruir todo
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+### Despliegue en Producción
+
+Para desplegar en producción usando las imágenes de Docker Hub:
+
+```bash
+# 1. Descargar imágenes
+docker pull yoriel/api-proveedores-backend:1.0.0
+docker pull yoriel/api-proveedores-frontend:latest
+
+# 2. Ejecutar con docker-compose
+docker-compose up -d
+
+# 3. Verificar
+curl http://localhost:5000/health
+```
+
+### CI/CD con Docker
+
+Las imágenes pueden ser parte de un pipeline CI/CD:
+
+```bash
+# Build
+docker-compose build
+
+# Test
+docker-compose run backend pytest
+
+# Push a registry
+docker push yoriel/api-proveedores-backend:latest
+docker push yoriel/api-proveedores-frontend:latest
+```
 
 ---
 
